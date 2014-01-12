@@ -1,0 +1,131 @@
+#!/usr/bin/perl
+
+=head1 NAME
+
+pushbullet
+
+=head1 DESCRIPTION
+
+=head1 SYNOPSIS
+
+pushbullet [ -k <pushbullet_apikey> ]
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<-b>, B<--body>
+
+=item B<-c>, B<--config>
+
+=item B<-d>, B<--device_id>
+
+Sets devices to receive bullet
+
+=item B<-h>, B<--help>
+
+Prints this Help
+
+=item B<-k>, B<--apikey>
+
+Sets PushBullet API key
+
+=item B<-t>, B<--title>
+
+=item B<-v>, B<--version>    
+
+Prints WWW::PushBullet version
+
+=back
+
+=cut
+
+use strict;
+use warnings;
+
+use File::Slurp;
+use FindBin;
+use Getopt::Long;
+use JSON;
+use Pod::Usage;
+
+use lib "$FindBin::Bin/../lib/";
+
+use WWW::PushBullet;
+
+my $FILE_CONFIG = "$FindBin::Bin/../conf/pushbullet.json";
+
+=head1 SUBROUTINES/METHODS
+
+=head2 Read_File_Config($file_config)
+
+Reads configuration file
+
+=cut
+
+sub Read_Config_File
+{
+    my $file_config = shift;
+
+    $file_config ||= $FILE_CONFIG;
+    if (-r $file_config)
+    {
+        my $json = read_file($file_config);
+        return (JSON->new->decode($json));
+    }
+
+    return (undef);
+}
+
+#
+# MAIN
+#
+
+my %opt = ();
+
+pod2usage(0) if (@ARGV < 1);
+
+my $status = GetOptions(
+    'b|body=s'      => \$opt{body},
+    'c|config=s'    => \$opt{file_config},
+    'D|debug'       => \$opt{debug},
+    'd|device_id=s' => \$opt{device_id},
+    'h|help'        => \$opt{help},
+    'k|apikey=s'    => \$opt{apikey},
+    't|title=s'     => \$opt{title},
+    'v|version'     => \$opt{version},
+);
+
+pod2usage(0) if ((!$status) || ($opt{help}));
+
+my $conf = Read_Config_File($opt{file_config});
+
+foreach my $p (sort keys %{$conf})
+{
+    printf "Config %s: %s\n", $p, $conf->{$p}
+        if ($opt{debug});
+}
+
+my $apikey    = $opt{apikey}    || $conf->{apikey};
+my $body      = $opt{body}      || $conf->{default_body};
+my $device_id = $opt{device_id} || $conf->{default_device_id};
+my $title     = $opt{title}     || $conf->{default_title};
+
+printf "API Key: [%s]\nDevice ID: [%s]\n", $apikey, $device_id
+    if ($opt{debug});
+
+my $pb = WWW::PushBullet->new({apikey => $apikey});
+
+my $devices = $pb->devices();
+foreach my $d (@{$devices})
+{
+    printf "%s %s\n", $d->{id}, $d->{extras}->{model};
+}
+
+$pb->push_note({device_id => $device_id, title => $title, body => $body});
+
+=head1 AUTHOR
+
+Sebastien Thebert <stt@ittool.org>
+
+=cut
