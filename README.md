@@ -1,5 +1,3 @@
-PushBullet Perl module
-
 # About
 
 This is a Perl module and program giving easy access to [PushBullet](https://www.pushbullet.com/) API from Perl.
