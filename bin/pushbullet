@@ -8,19 +8,38 @@ pushbullet
 
 =head1 SYNOPSIS
 
-pushbullet [ -k <pushbullet_apikey> ]
-
+    pushbullet address [ -k <pushbullet_apikey> ] [ -d <device_id> ]
+        --name 'address name' --address 'complete address'
+    pushbullet link [ -k <pushbullet_apikey> ] [ -d <device_id> ]
+        --title 'your title' --url 'http://address'
+    pushbullet list [ -k <pushbullet_apikey> ] [ -d <device_id> ]
+        --title 'your title' --item item1 --item item2 --item item3
+    pushbullet note [ -k <pushbullet_apikey> ] [ -d <device_id> ]
+        --title 'your title' --body 'your body message'
+    
 =head1 OPTIONS
 
 =over 4
 
+=item B<-a>, B<--address>
+
+Sets address for address
+
 =item B<-b>, B<--body>
+
+Sets body for note
 
 =item B<-c>, B<--config>
 
+Sets configuration file where to find default parameters configuration
+
+=item B<-D>, B<--debug>
+
+Sets debug mode
+
 =item B<-d>, B<--device_id>
 
-Sets devices to receive bullet
+Sets device to receive bullet
 
 =item B<-h>, B<--help>
 
@@ -30,7 +49,17 @@ Prints this Help
 
 Sets PushBullet API key
 
+=item B<-n>, B<--name>
+
+Sets name for address
+
 =item B<-t>, B<--title>
+
+Sets title for link, list or note
+
+=item B<-u>, B<--url>
+
+Sets url for address
 
 =item B<-v>, B<--version>    
 
@@ -82,20 +111,26 @@ sub Read_Config_File
 #
 
 my %opt = ();
+my @items = ();
 
-pod2usage(0) if (@ARGV < 1);
+pod2usage(0) if (@ARGV < 2);
+$opt{action} = $ARGV[0];
+pod2usage(0) if ($opt{action} !~ /^(devices|address|link|list|note)$/);
 
 my $status = GetOptions(
+    'a|address=s'   => \$opt{address},
     'b|body=s'      => \$opt{body},
     'c|config=s'    => \$opt{file_config},
     'D|debug'       => \$opt{debug},
     'd|device_id=s' => \$opt{device_id},
     'h|help'        => \$opt{help},
+    'i|item=s'      => \@items,
     'k|apikey=s'    => \$opt{apikey},
+    'n|name=s'      => \$opt{address},
     't|title=s'     => \$opt{title},
+    'u|url=s'       => \$opt{url},
     'v|version'     => \$opt{version},
 );
-
 pod2usage(0) if ((!$status) || ($opt{help}));
 
 my $conf = Read_Config_File($opt{file_config});
@@ -107,9 +142,13 @@ foreach my $p (sort keys %{$conf})
 }
 
 my $apikey    = $opt{apikey}    || $conf->{apikey};
+my $address   = $opt{address}   || $conf->{default_address};
 my $body      = $opt{body}      || $conf->{default_body};
 my $device_id = $opt{device_id} || $conf->{default_device_id};
+my $items     = \@items         || $conf->{default_items};
+my $name      = $opt{name}      || $conf->{default_name};
 my $title     = $opt{title}     || $conf->{default_title};
+my $url       = $opt{url}       || $conf->{default_url};
 
 printf "API Key: [%s]\nDevice ID: [%s]\n", $apikey, $device_id
     if ($opt{debug});
@@ -122,17 +161,54 @@ my $pb = WWW::PushBullet->new({apikey => $apikey});
 #    printf "%s %s\n", $d->{id}, $d->{extras}->{model};
 #}
 
-$pb->push_address({device_id => $device_id, name => 'Googleplex',
-    address => 'Google, Amphitheatre Parkway, Mountain View, CA, Etats-Unis'});
-
-$pb->push_link({device_id => $device_id, title => 'WWW::PushBullet',
-    url => 'https://github.com/sebthebert/WWW-PushBullet'});
-
-$pb->push_list({device_id => $device_id, title => '123',
-    items => ['One', 'Two', 'Three']});
-    
-$pb->push_note({device_id => $device_id, title => 'Title Note',
-    body => 'Body Note'});
+if ($opt{action} eq 'address')
+{
+    if ((defined $name) && (defined $address))
+    {
+        $pb->push_address({ device_id => $device_id, name => $name, 
+            address => $address });
+    }
+    else
+    {
+        printf "pushbullet address --name name --address 'complete address'\n";
+    }
+}
+elsif ($opt{action} eq 'link')
+{
+    if ((defined $title) && (defined $url) && ($url =~ /^https?:/))
+    {
+        $pb->push_link({ device_id => $device_id, title => $title,
+            url => $url });
+    }
+    else
+    {
+        printf "pushbullet link --title title --url http://address\n";
+    }
+}
+elsif ($opt{action} eq 'list')
+{
+    if ((defined $title) && (scalar @items))
+    {
+        $pb->push_list({ device_id => $device_id, title => $title,
+            items => \@items });
+    }
+    else
+    {
+        printf "pushbullet list --title title --item item1 --item item2 --item item3\n";
+    }
+}
+elsif ($opt{action} eq 'note')
+{   
+    if ((defined $title) && (defined $body))
+    {
+        $pb->push_note({ device_id => $device_id, title => $title,
+            body => $body });
+    }
+    else
+    {
+        printf "pushbullet note --title title --body 'body message'\n";
+    }
+}
 
 =head1 AUTHOR
 

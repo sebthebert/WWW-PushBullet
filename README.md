@@ -20,5 +20,11 @@ You also need this Perl modules:
 
 # Usage
 
-	pushbullet [--apikey <pushbullet_apikey>] [--device <device_id>] 
-	   --title "title message" --body "body message"
+    pushbullet address [ -k <pushbullet_apikey> ] [ -d <device_id> ]
+        --name 'address name' --address 'complete address'
+    pushbullet link [ -k <pushbullet_apikey> ] [ -d <device_id> ]
+        --title 'your title' --url 'http://address'
+    pushbullet list [ -k <pushbullet_apikey> ] [ -d <device_id> ]
+        --title 'your title' --item item1 --item item2 --item item3
+    pushbullet note [ -k <pushbullet_apikey> ] [ -d <device_id> ]
+        --title 'your title' --body 'your body message'
