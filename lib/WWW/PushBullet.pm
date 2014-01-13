@@ -77,7 +77,7 @@ sub devices
 {
     my $self = shift;
 
-    my $req = HTTP::Request->new(GET => $PUSHBULLET{URL_API} . "/devices");
+    my $req = HTTP::Request->new(GET => $PUSHBULLET{URL_API} . '/devices');
     my $res = $self->{_ua}->request($req);
 
     if ($res->is_success)
@@ -100,7 +100,7 @@ sub pushes
 {
     my ($self, $content) = @_;
 
-    my $req = HTTP::Request->new(POST => $PUSHBULLET{URL_API} . "/pushes");
+    my $req = HTTP::Request->new(POST => $PUSHBULLET{URL_API} . '/pushes');
     $req->content_type('application/x-www-form-urlencoded');
     $req->content($content);
     my $res = $self->{_ua}->request($req);
@@ -117,6 +117,68 @@ sub pushes
     }
 }
 
+=head2 push_address
+
+Pushes address (with name & address)
+
+=cut
+
+sub push_address
+{
+    my ($self, $params) = @_;
+
+    my $content =
+          "type=address&device_id=$params->{device_id}"
+        . "&name=$params->{name}"
+        . "&address=$params->{address}";
+    my $result = $self->pushes($content);
+
+    return ($result);
+}
+
+=head2 push_link
+
+Pushes link (with title & url)
+
+=cut
+
+sub push_link
+{
+    my ($self, $params) = @_;
+
+    my $content =
+          "type=link&device_id=$params->{device_id}"
+        . "&title=$params->{title}"
+        . "&url=$params->{url}";
+    my $result = $self->pushes($content);
+
+    return ($result);
+}
+
+=head2 push_list
+
+Pushes link (with title & items)
+
+=cut
+
+sub push_list
+{
+    my ($self, $params) = @_;
+
+    my $str_items = '';
+    foreach my $i (@{$params->{items}})
+    {
+        $str_items .= '&items=' . $i;
+    }
+    my $content =
+          "type=list&device_id=$params->{device_id}"
+        . "&title=$params->{title}"
+        . $str_items;
+    my $result = $self->pushes($content);
+
+    return ($result);
+}
+
 =head2 push_note($params)
 
 Pushes note (with title & body)
@@ -128,11 +190,9 @@ sub push_note
     my ($self, $params) = @_;
 
     my $content =
-          "device_id=$params->{device_id}"
-        . "&type=note"
+          "type=note&device_id=$params->{device_id}"
         . "&title=$params->{title}"
         . "&body=$params->{body}";
-    printf "content: %s\n", $content;
     my $result = $self->pushes($content);
 
     return ($result);

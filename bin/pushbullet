@@ -116,13 +116,23 @@ printf "API Key: [%s]\nDevice ID: [%s]\n", $apikey, $device_id
 
 my $pb = WWW::PushBullet->new({apikey => $apikey});
 
-my $devices = $pb->devices();
-foreach my $d (@{$devices})
-{
-    printf "%s %s\n", $d->{id}, $d->{extras}->{model};
-}
+#my $devices = $pb->devices();
+#foreach my $d (@{$devices})
+#{
+#    printf "%s %s\n", $d->{id}, $d->{extras}->{model};
+#}
 
-$pb->push_note({device_id => $device_id, title => $title, body => $body});
+$pb->push_address({device_id => $device_id, name => 'Googleplex',
+    address => 'Google, Amphitheatre Parkway, Mountain View, CA, Etats-Unis'});
+
+$pb->push_link({device_id => $device_id, title => 'WWW::PushBullet',
+    url => 'https://github.com/sebthebert/WWW-PushBullet'});
+
+$pb->push_list({device_id => $device_id, title => '123',
+    items => ['One', 'Two', 'Three']});
+    
+$pb->push_note({device_id => $device_id, title => 'Title Note',
+    body => 'Body Note'});
 
 =head1 AUTHOR
 
