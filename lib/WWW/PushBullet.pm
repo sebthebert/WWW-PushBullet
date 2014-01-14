@@ -5,7 +5,22 @@ WWW::PushBullet
 
 =head1 DESCRIPTION
 
+Module giving easy access to PushBullet API
+
 =head1 SYNOPSIS
+
+    use WWW::PushBullet;
+    
+    my $pb = WWW::PushBullet->new({apikey => $apikey});
+    
+    $pb->push_address({ device_id => $device_id, name => $name, 
+        address => $address });
+    $pb->push_link({ device_id => $device_id, title => $title,
+        url => $url });
+    $pb->push_list({ device_id => $device_id, title => $title, 
+        items => \@items });
+    $pb->push_note({ device_id => $device_id, title => $title,
+        body => $body });
 
 =cut
 
@@ -17,7 +32,7 @@ use warnings;
 use JSON;
 use LWP::UserAgent;
 
-our $VERSION = '0.4';
+our $VERSION = '0.6';
 
 my %PUSHBULLET = (
     REALM   => 'Pushbullet',
@@ -29,7 +44,7 @@ $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
 
 =head1 SUBROUTINES/METHODS
 
-=head2 new
+=head2 new($params)
 
 Creates a new instance of PushBullet API
 
@@ -94,6 +109,8 @@ sub devices
 
 =head2 pushes($content)
 
+Generic pushes function
+
 =cut
 
 sub pushes
@@ -117,7 +134,7 @@ sub pushes
     }
 }
 
-=head2 push_address
+=head2 push_address($params)
 
 Pushes address (with name & address)
 
@@ -136,7 +153,7 @@ sub push_address
     return ($result);
 }
 
-=head2 push_link
+=head2 push_link($params)
 
 Pushes link (with title & url)
 
@@ -155,7 +172,7 @@ sub push_link
     return ($result);
 }
 
-=head2 push_list
+=head2 push_list($params)
 
 Pushes link (with title & items)
 

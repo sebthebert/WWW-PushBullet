@@ -1,7 +1,10 @@
+CHANGES
+LICENSE
 Makefile.PL
 MANIFEST
 META.json
 META.yml
+README.md
 bin/pushbullet
 conf/pushbullet.json
 lib/WWW/PushBullet.pm

@@ -6,6 +6,8 @@ pushbullet
 
 =head1 DESCRIPTION
 
+Program giving easy access to PushBullet features
+
 =head1 SYNOPSIS
 
     pushbullet address [ -k <pushbullet_apikey> ] [ -d <device_id> ]

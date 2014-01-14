@@ -1,0 +1,11 @@
+Revision history for WWW-PushBullet
+
+0.6 2014-01-14 23:30
+
+    * 'CHANGES', 'LICENSE' & 'README.md' files added
+    * 'PushBullet.pm' & 'pushbullet' POD Documentation updated
+
+
+0.4 2014-01-14 13:00
+
+    * Initial commit
