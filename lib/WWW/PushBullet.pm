@@ -15,10 +15,15 @@ Module giving easy access to PushBullet API
     
     $pb->push_address({ device_id => $device_id, name => $name, 
         address => $address });
+        
+    $pb->push_file({ device_id => $device_id, file => $filename);
+        
     $pb->push_link({ device_id => $device_id, title => $title,
         url => $url });
+        
     $pb->push_list({ device_id => $device_id, title => $title, 
         items => \@items });
+        
     $pb->push_note({ device_id => $device_id, title => $title,
         body => $body });
 
@@ -32,7 +37,7 @@ use warnings;
 use JSON;
 use LWP::UserAgent;
 
-our $VERSION = '0.8';
+our $VERSION = '0.8.2';
 
 my %PUSHBULLET = (
     REALM   => 'Pushbullet',
@@ -48,6 +53,8 @@ $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
 
 Creates a new instance of PushBullet API
 
+    my $pb = WWW::PushBullet->new({apikey => $apikey});
+
 =cut
 
 sub new
@@ -58,6 +65,7 @@ sub new
     $ua->agent("WWW::PushBullet/$VERSION");
     $ua->credentials($PUSHBULLET{SERVER}, $PUSHBULLET{REALM}, $params->{apikey},
         '');
+
     #$ua->proxy('https', 'http://localhost:8080/');
     my $self = {
         _ua     => $ua,
@@ -73,6 +81,8 @@ sub new
 
 Returns current PushBullet API key
 
+    my $apikey = $pb->api_key();
+
 =cut
 
 sub api_key
@@ -83,8 +93,15 @@ sub api_key
 }
 
 =head2 devices()
-
+    
 Returns list of devices
+
+    my $devices = $pb->devices();
+    
+    foreach my $d (@{$devices})
+    {
+        printf "Device '%s' => id %s\n", $d->{extras}->{model}, $d->{id};
+    }
 
 =cut
 
@@ -106,24 +123,26 @@ sub devices
     }
 }
 
-=head2 pushes($content)
+=head2 _pushes($content)
 
-Generic pushes function
+Generic pushes function (not supposed to be used directly)
 
 =cut
 
-sub pushes
+sub _pushes
 {
     my ($self, $content) = @_;
 
     my $type = undef;
-    foreach my $i (0..$#{$content})
+    foreach my $i (0 .. $#{$content})
     {
-        $type = $content->[$i+1] if ($content->[$i] eq 'type'); 
+        $type = $content->[$i + 1] if ($content->[$i] eq 'type');
     }
-    my $res = $self->{_ua}->post("$PUSHBULLET{URL_API}/pushes", 
+    my $res = $self->{_ua}->post(
+        "$PUSHBULLET{URL_API}/pushes",
         Content_Type => ($type eq 'file' ? 'form-data' : undef),
-        Content => $content);
+        Content => $content
+    );
 
     if ($res->is_success)
     {
@@ -141,19 +160,27 @@ sub pushes
 
 Pushes address (with name & address)
 
+    $pb->push_address(
+        {
+            device_id => $device_id,
+            name      => 'GooglePlex',
+            address   => '1600 Amphitheatre Pkwy, Mountain View, CA 94043, Etats-Unis'
+        }
+        );
+
 =cut
 
 sub push_address
 {
     my ($self, $params) = @_;
 
-    my $content = [ 
-        type => 'address',
+    my $content = [
+        type      => 'address',
         device_id => $params->{device_id},
-        name => $params->{name},
-        address => $params->{address},
-        ];
-    my $result = $self->pushes($content);
+        name      => $params->{name},
+        address   => $params->{address},
+    ];
+    my $result = $self->_pushes($content);
 
     return ($result);
 }
@@ -162,6 +189,8 @@ sub push_address
 
 Pushes file
 
+    $pb->push_file({ device_id => $device_id, file => '/var/www/index.html' });
+
 =cut
 
 sub push_file
@@ -169,12 +198,12 @@ sub push_file
     my ($self, $params) = @_;
 
     my $content = [
-        type => 'file',
+        type      => 'file',
         device_id => $params->{device_id},
-        file => [ $params->{file} ],
-        ];
-    my $result = $self->pushes($content);
-    
+        file      => [$params->{file}],
+    ];
+    my $result = $self->_pushes($content);
+
     return ($result);
 }
 
@@ -182,27 +211,43 @@ sub push_file
 
 Pushes link (with title & url)
 
+    $pb->push_link(
+        {
+            device_id => $device_id,
+            title     => 'WWW::PushBullet Perl module on GitHub',
+            url       => 'https://github.com/sebthebert/WWW-PushBullet'
+        }
+        );
+
 =cut
 
 sub push_link
 {
     my ($self, $params) = @_;
 
-    my $content = [ 
-        type => 'link',
+    my $content = [
+        type      => 'link',
         device_id => $params->{device_id},
-        title => $params->{title},
-        url => $params->{url},
-        ];
-        
-    my $result = $self->pushes($content);
+        title     => $params->{title},
+        url       => $params->{url},
+    ];
+
+    my $result = $self->_pushes($content);
 
     return ($result);
 }
 
 =head2 push_list($params)
 
-Pushes link (with title & items)
+Pushes list (with title & items)
+
+    $pb->push_list(
+        {
+            device_id => $device_id,
+            title     => 'One list with 3 items',
+            items     => [ 'One', 'Two', 'Three' ]
+        }
+        );
 
 =cut
 
@@ -211,12 +256,12 @@ sub push_list
     my ($self, $params) = @_;
 
     my $content = [
-        type => 'list',
+        type      => 'list',
         device_id => $params->{device_id},
-        title => $params->{title}, 
-        items => $params->{items},
-        ];
-    my $result = $self->pushes($content);
+        title     => $params->{title},
+        items     => $params->{items},
+    ];
+    my $result = $self->_pushes($content);
 
     return ($result);
 }
@@ -225,6 +270,14 @@ sub push_list
 
 Pushes note (with title & body)
 
+    $pb->push_note(
+        {
+            device_id => $device_id,
+            title     => 'Note Title',
+            body      => 'Note Body'
+        }
+        );
+
 =cut
 
 sub push_note
@@ -232,12 +285,12 @@ sub push_note
     my ($self, $params) = @_;
 
     my $content = [
-        type => 'note',
+        type      => 'note',
         device_id => $params->{device_id},
-        title => $params->{title}, 
-        body => $params->{body},
-        ];
-    my $result = $self->pushes($content);
+        title     => $params->{title},
+        body      => $params->{body},
+    ];
+    my $result = $self->_pushes($content);
 
     return ($result);
 }

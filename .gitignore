@@ -5,3 +5,5 @@ blib/*
 pm_to_blib
 Makefile
 WWW-PushBullet-*.tar.gz
+
+*.bak

@@ -123,12 +123,12 @@ sub Read_Config_File
 # MAIN
 #
 
-my %opt = ();
+my %opt       = ();
 my @opt_items = ();
 
 pod2usage(0) if (@ARGV < 2);
 $opt{action} = $ARGV[0];
-pod2usage(0) if ($opt{action} !~ /^(address|devices|file|link|list|note)$/);
+pod2usage(0) if ($opt{action} !~ /^(?:address|devices|file|link|list|note)$/);
 
 my $status = GetOptions(
     'a|address=s'   => \$opt{address},
@@ -154,10 +154,10 @@ my $address   = $opt{address}   || $conf->{default_address};
 my $body      = $opt{body}      || $conf->{default_body};
 my $device_id = $opt{device_id} || $conf->{default_device_id};
 my $file      = $opt{file}      || $conf->{default_file};
-my $items     = (scalar @opt_items ? \@opt_items : $conf->{default_items});
-my $name      = $opt{name}      || $conf->{default_name};
-my $title     = $opt{title}     || $conf->{default_title};
-my $url       = $opt{url}       || $conf->{default_url};
+my $items = (scalar @opt_items ? \@opt_items : $conf->{default_items});
+my $name  = $opt{name}  || $conf->{default_name};
+my $title = $opt{title} || $conf->{default_title};
+my $url   = $opt{url}   || $conf->{default_url};
 
 printf "API Key: [%s]\nDevice ID: [%s]\n", $apikey, $device_id
     if ($opt{debug});
@@ -168,8 +168,13 @@ if ($opt{action} eq 'address')
 {
     if ((defined $name) && (defined $address))
     {
-        $pb->push_address({ device_id => $device_id, name => $name, 
-            address => $address });
+        $pb->push_address(
+            {
+                device_id => $device_id,
+                name      => $name,
+                address   => $address
+            }
+        );
     }
     else
     {
@@ -188,7 +193,7 @@ elsif ($opt{action} eq 'file')
 {
     if (defined $file)
     {
-        $pb->push_file({ device_id => $device_id, file => $file });
+        $pb->push_file({device_id => $device_id, file => $file});
     }
     else
     {
@@ -199,8 +204,13 @@ elsif ($opt{action} eq 'link')
 {
     if ((defined $title) && (defined $url) && ($url =~ /^https?:/))
     {
-        $pb->push_link({ device_id => $device_id, title => $title,
-            url => $url });
+        $pb->push_link(
+            {
+                device_id => $device_id,
+                title     => $title,
+                url       => $url
+            }
+        );
     }
     else
     {
@@ -211,20 +221,31 @@ elsif ($opt{action} eq 'list')
 {
     if ((defined $title) && (scalar @{$items}))
     {
-        $pb->push_list({ device_id => $device_id, title => $title,
-            items => $items });
+        $pb->push_list(
+            {
+                device_id => $device_id,
+                title     => $title,
+                items     => $items
+            }
+        );
     }
     else
     {
-        printf "pushbullet list --title title --item item1 --item item2 --item item3\n";
+        printf
+"pushbullet list --title title --item item1 --item item2 --item item3\n";
     }
 }
 elsif ($opt{action} eq 'note')
-{   
+{
     if ((defined $title) && (defined $body))
     {
-        $pb->push_note({ device_id => $device_id, title => $title,
-            body => $body });
+        $pb->push_note(
+            {
+                device_id => $device_id,
+                title     => $title,
+                body      => $body
+            }
+        );
     }
     else
     {
