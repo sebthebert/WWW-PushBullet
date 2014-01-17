@@ -24,10 +24,17 @@ You also need this Perl modules:
 
     pushbullet address [ -k <pushbullet_apikey> ] [ -d <device_id> ]
         --name 'address name' --address 'complete address'
+
+    pushbullet devices [ -k <pushbullet_apikey> ]
+    
+    pushbullet file [ -k <pushbullet_apikey> ] [ -d <device_id> ] -f filename
+    
     pushbullet link [ -k <pushbullet_apikey> ] [ -d <device_id> ]
         --title 'your title' --url 'http://address'
+    
     pushbullet list [ -k <pushbullet_apikey> ] [ -d <device_id> ]
         --title 'your title' --item item1 --item item2 --item item3
+    
     pushbullet note [ -k <pushbullet_apikey> ] [ -d <device_id> ]
         --title 'your title' --body 'your body message'
 

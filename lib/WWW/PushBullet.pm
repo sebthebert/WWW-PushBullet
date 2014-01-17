@@ -1,7 +1,7 @@
 
 =head1 NAME
 
-WWW::PushBullet
+WWW::PushBullet - Module giving easy access to PushBullet API
 
 =head1 DESCRIPTION
 
@@ -32,7 +32,7 @@ use warnings;
 use JSON;
 use LWP::UserAgent;
 
-our $VERSION = '0.6';
+our $VERSION = '0.8';
 
 my %PUSHBULLET = (
     REALM   => 'Pushbullet',
@@ -58,7 +58,7 @@ sub new
     $ua->agent("WWW::PushBullet/$VERSION");
     $ua->credentials($PUSHBULLET{SERVER}, $PUSHBULLET{REALM}, $params->{apikey},
         '');
-
+    #$ua->proxy('https', 'http://localhost:8080/');
     my $self = {
         _ua     => $ua,
         _apikey => $params->{apikey},
@@ -92,8 +92,7 @@ sub devices
 {
     my $self = shift;
 
-    my $req = HTTP::Request->new(GET => $PUSHBULLET{URL_API} . '/devices');
-    my $res = $self->{_ua}->request($req);
+    my $res = $self->{_ua}->get("$PUSHBULLET{URL_API}/devices");
 
     if ($res->is_success)
     {
@@ -117,10 +116,14 @@ sub pushes
 {
     my ($self, $content) = @_;
 
-    my $req = HTTP::Request->new(POST => $PUSHBULLET{URL_API} . '/pushes');
-    $req->content_type('application/x-www-form-urlencoded');
-    $req->content($content);
-    my $res = $self->{_ua}->request($req);
+    my $type = undef;
+    foreach my $i (0..$#{$content})
+    {
+        $type = $content->[$i+1] if ($content->[$i] eq 'type'); 
+    }
+    my $res = $self->{_ua}->post("$PUSHBULLET{URL_API}/pushes", 
+        Content_Type => ($type eq 'file' ? 'form-data' : undef),
+        Content => $content);
 
     if ($res->is_success)
     {
@@ -144,12 +147,34 @@ sub push_address
 {
     my ($self, $params) = @_;
 
-    my $content =
-          "type=address&device_id=$params->{device_id}"
-        . "&name=$params->{name}"
-        . "&address=$params->{address}";
+    my $content = [ 
+        type => 'address',
+        device_id => $params->{device_id},
+        name => $params->{name},
+        address => $params->{address},
+        ];
     my $result = $self->pushes($content);
 
+    return ($result);
+}
+
+=head2 push_file($params)
+
+Pushes file
+
+=cut
+
+sub push_file
+{
+    my ($self, $params) = @_;
+
+    my $content = [
+        type => 'file',
+        device_id => $params->{device_id},
+        file => [ $params->{file} ],
+        ];
+    my $result = $self->pushes($content);
+    
     return ($result);
 }
 
@@ -163,10 +188,13 @@ sub push_link
 {
     my ($self, $params) = @_;
 
-    my $content =
-          "type=link&device_id=$params->{device_id}"
-        . "&title=$params->{title}"
-        . "&url=$params->{url}";
+    my $content = [ 
+        type => 'link',
+        device_id => $params->{device_id},
+        title => $params->{title},
+        url => $params->{url},
+        ];
+        
     my $result = $self->pushes($content);
 
     return ($result);
@@ -182,15 +210,12 @@ sub push_list
 {
     my ($self, $params) = @_;
 
-    my $str_items = '';
-    foreach my $i (@{$params->{items}})
-    {
-        $str_items .= '&items=' . $i;
-    }
-    my $content =
-          "type=list&device_id=$params->{device_id}"
-        . "&title=$params->{title}"
-        . $str_items;
+    my $content = [
+        type => 'list',
+        device_id => $params->{device_id},
+        title => $params->{title}, 
+        items => $params->{items},
+        ];
     my $result = $self->pushes($content);
 
     return ($result);
@@ -206,10 +231,12 @@ sub push_note
 {
     my ($self, $params) = @_;
 
-    my $content =
-          "type=note&device_id=$params->{device_id}"
-        . "&title=$params->{title}"
-        . "&body=$params->{body}";
+    my $content = [
+        type => 'note',
+        device_id => $params->{device_id},
+        title => $params->{title}, 
+        body => $params->{body},
+        ];
     my $result = $self->pushes($content);
 
     return ($result);
