@@ -40,7 +40,9 @@ Install the package:
     make test
     make install
 
-## Installation from CPAN Mini
+## Installation from CPAN Minus
+
+The easiest way to install WWW::PushBullet is [CPAN Minus](https://github.com/miyagawa/cpanminus):
 
     cpanm WWW::PushBullet
 
