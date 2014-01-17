@@ -19,6 +19,31 @@ You also need this Perl modules:
   * [LWP](https://metacpan.org/release/libwww-perl)
   * [Pod::Usage](https://metacpan.org/release/Pod-Usage)
 
+## Manual installation
+
+Get the latest release of WWW::PushBullet on GitHub.
+
+    https://github.com/sebthebert/WWW-PushBullet/releases
+    
+Extract sources from the file you get:
+
+    tar xvfz WWW-PushBullet-<version>.tar.gz
+    
+Generate a Makefile:
+
+    cd WWW-PushBullet-<version>
+    perl Makefile.PL 
+
+Install the package:
+    
+    make
+    make test
+    make install
+
+## Installation from CPAN Mini
+
+    cpanm WWW::PushBullet
+
 
 # Usage
 
