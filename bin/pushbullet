@@ -46,7 +46,7 @@ Sets configuration file where to find default parameters configuration
 
 Sets debug mode
 
-=item B<-d>, B<--device_id>
+=item B<-d>, B<--device>
 
 Sets device to receive bullet
 
