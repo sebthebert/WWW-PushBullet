@@ -140,20 +140,20 @@ sub Read_Config_File
 # MAIN
 #
 
-my $status = GetOptions(
-    'a|address=s'   => \$opt{address},
-    'b|body=s'      => \$opt{body},
-    'c|config=s'    => \$opt{file_config},
-    'D|debug'       => \$opt{debug},
-    'd|device_id=s' => \@opt_devices,
-    'h|help'        => \$opt{help},
-    'f|file=s'      => \$opt{file},
-    'i|item=s'      => \@opt_items,
-    'k|apikey=s'    => \$opt{apikey},
-    'n|name=s'      => \$opt{name},
-    't|title=s'     => \$opt{title},
-    'u|url=s'       => \$opt{url},
-    'v|version'     => \$opt{version},
+my $status = GetOptions(\%opt,
+    'address|a=s',  # for 'pushbullet address'
+    'body|b=s',     # for 'pushbullet note'
+    'config|c=s',   # to change configuration file
+    'device|d=s@',  # to specify device
+    'file|f=s',     # for 'pushbullet file'
+    'item|i=s@',    # for 'pushbullet list'
+    'apikey|k=s',   # to specify apikey
+    'name|n=s',     # for 'pushbullet address'
+    'title|t=s',    # for 'pushbullet note'
+    'url|u=s',      # for 'pushbullet link, list & note'
+    'debug|D',      # to set debug mode
+    'help|h',       # to print help
+    'version|v',    # to print version
 );
 pod2usage(0) if ((!$status) || ($opt{help}));
 if ($opt{version})
@@ -165,15 +165,16 @@ if ($opt{version})
 $opt{action} = $ARGV[0];
 
 pod2usage(0) if ((! defined $opt{action}) || ($opt{action} !~ /^(?:address|devices|file|link|list|note)$/));
-my $conf = Read_Config_File($opt{file_config});
+my $conf = Read_Config_File($opt{config});
 
 my $apikey    = $opt{apikey}    || $conf->{apikey};
 my $address   = $opt{address}   || $conf->{default_address};
 my $body      = $opt{body}      || $conf->{default_body};
-my @devices   = (scalar @opt_devices ? @opt_devices 
+my @devices   = (defined $opt{device} && scalar @{$opt{device}} ? @{$opt{device}}
     : (defined $conf->{default_device_id} ? @{$conf->{default_device_id}} : ()));
 my $file      = $opt{file}      || $conf->{default_file};
-my $items = (scalar @opt_items ? \@opt_items : $conf->{default_items});
+my $items = (defined $opt{item} &&scalar @{$opt{item}} ? $opt{item} 
+    : $conf->{default_items});
 my $name  = $opt{name}  || $conf->{default_name};
 my $title = $opt{title} || $conf->{default_title};
 my $url   = $opt{url}   || $conf->{default_url};
