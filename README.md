@@ -71,7 +71,7 @@ You can configure default parameters in a JSON format configuration file:
 
     {
         "apikey":"",
-        "default_device_id":"",
+        "default_device_id":[],
         "default_address":"1600 Amphitheatre Pkwy, Mountain View, CA 94043, Etats-Unis",
         "default_body":"This is a default title",
         "default_name":"GooglePlex",
@@ -80,3 +80,5 @@ You can configure default parameters in a JSON format configuration file:
     }
 
 This configuration file is by default **./conf/pushbullet.json** but you can also specify another file with the **-c/--config** option.
+
+If you don't specify device_id (**-d/--device_id** or in configuration file), it will **push to all devices** of this apikey account.
