@@ -36,6 +36,7 @@ use warnings;
 
 use JSON;
 use LWP::UserAgent;
+use LWP::Protocol::https;
 
 our $VERSION = '0.8.2';
 
@@ -46,7 +47,7 @@ my %PUSHBULLET = (
 );
 
 $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
-
+  
 =head1 SUBROUTINES/METHODS
 
 =head2 new($params)
@@ -61,12 +62,12 @@ sub new
 {
     my ($class, $params) = @_;
 
+    return (undef)  if (!defined $params->{apikey});
     my $ua = LWP::UserAgent->new;
     $ua->agent("WWW::PushBullet/$VERSION");
     $ua->credentials($PUSHBULLET{SERVER}, $PUSHBULLET{REALM}, $params->{apikey},
         '');
 
-    #$ua->proxy('https', 'http://localhost:8080/');
     my $self = {
         _ua     => $ua,
         _apikey => $params->{apikey},
@@ -293,6 +294,17 @@ sub push_note
     my $result = $self->_pushes($content);
 
     return ($result);
+}
+
+=head2 version()
+
+Returns WWW::PushBullet module version
+
+=cut
+
+sub version
+{
+    return ($VERSION);
 }
 
 1;

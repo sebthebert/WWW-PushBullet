@@ -97,7 +97,23 @@ use WWW::PushBullet;
 
 my $FILE_CONFIG = "$FindBin::Bin/../conf/pushbullet.json";
 
+my %opt       = ();
+my @opt_devices = ();
+my @opt_items = ();
+
 =head1 SUBROUTINES/METHODS
+
+=head2 DEBUG
+
+Prints Debug message when debug mode is enabled (with -D/--debug)
+
+=cut
+
+sub DEBUG
+{
+    my $line = shift;
+    printf "[DEBUG] %s\n", $line    if ($opt{debug});    
+}
 
 =head2 Read_File_Config($file_config)
 
@@ -112,6 +128,7 @@ sub Read_Config_File
     $file_config ||= $FILE_CONFIG;
     if (-r $file_config)
     {
+        DEBUG("Read_Config_File('$file_config')");
         my $json = read_file($file_config);
         return (JSON->new->decode($json));
     }
@@ -122,14 +139,6 @@ sub Read_Config_File
 #
 # MAIN
 #
-
-my %opt       = ();
-my @opt_devices = ();
-my @opt_items = ();
-
-pod2usage(0) if (@ARGV < 2);
-$opt{action} = $ARGV[0];
-pod2usage(0) if ($opt{action} !~ /^(?:address|devices|file|link|list|note)$/);
 
 my $status = GetOptions(
     'a|address=s'   => \$opt{address},
@@ -147,7 +156,15 @@ my $status = GetOptions(
     'v|version'     => \$opt{version},
 );
 pod2usage(0) if ((!$status) || ($opt{help}));
+if ($opt{version})
+{
+    printf "WWW::PushBullet v%s\n", WWW::PushBullet::version();
+    exit 0;
+}
 
+$opt{action} = $ARGV[0];
+
+pod2usage(0) if ((! defined $opt{action}) || ($opt{action} !~ /^(?:address|devices|file|link|list|note)$/));
 my $conf = Read_Config_File($opt{file_config});
 
 my $apikey    = $opt{apikey}    || $conf->{apikey};
@@ -162,8 +179,10 @@ my $title = $opt{title} || $conf->{default_title};
 my $url   = $opt{url}   || $conf->{default_url};
 
 my $pb = WWW::PushBullet->new({apikey => $apikey});
-if (! scalar @devices)
+
+if ((! scalar @devices) && ($opt{action} ne 'devices'))
 {
+    DEBUG("No device specified, get all devices from apikey account");
     my $devs = $pb->devices();
     foreach my $d (@{$devs})
     {
@@ -171,15 +190,13 @@ if (! scalar @devices)
     }
 }
 
-printf "%s\n", join ',', @opt_devices;
-printf "%s\n", join ',', @devices;
-printf "%d\n", scalar @devices;
 if ($opt{action} eq 'address')
 {
     if ((defined $name) && (defined $address))
     {
         foreach my $device (@devices)
         {
+            DEBUG("push_address");
             $pb->push_address(
                 {
                     device_id => $device,
@@ -208,6 +225,7 @@ elsif ($opt{action} eq 'file')
     {
         foreach my $device (@devices)
         {
+            DEBUG("push_file");
             $pb->push_file({device_id => $device, file => $file});
         }
     }
@@ -222,6 +240,7 @@ elsif ($opt{action} eq 'link')
     {
         foreach my $device (@devices)
         {   
+            DEBUG("push_link");
             $pb->push_link(
                 {
                     device_id => $device,
@@ -242,6 +261,7 @@ elsif ($opt{action} eq 'list')
     {
         foreach my $device (@devices)
         {
+            DEBUG("push_list");
             $pb->push_list(
                 {
                     device_id => $device,
@@ -263,6 +283,7 @@ elsif ($opt{action} eq 'note')
     {
         foreach my $device (@devices)
         {
+            DEBUG("push_note");
             $pb->push_note(
                 {
                     device_id => $device,
