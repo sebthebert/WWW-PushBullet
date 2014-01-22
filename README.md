@@ -12,6 +12,7 @@ You can get your API key in your [PushBullet account settings](https://www.pushb
 
 You also need this Perl modules:
 
+  * [Data::Dump](https://metacpan.org/pod/Data::Dump)
   * [File::Slurp](https://metacpan.org/release/File-Slurp)
   * [FindBin](https://metacpan.org/pod/FindBin)
   * [Getopt::Long](https://metacpan.org/release/Getopt-Long)

@@ -34,11 +34,12 @@ package WWW::PushBullet;
 use strict;
 use warnings;
 
+use Data::Dump qw(dump);
 use JSON;
 use LWP::UserAgent;
 use LWP::Protocol::https;
 
-our $VERSION = '0.8.2';
+our $VERSION = '0.9';
 
 my %PUSHBULLET = (
     REALM   => 'Pushbullet',
@@ -47,7 +48,7 @@ my %PUSHBULLET = (
 );
 
 $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
-  
+
 =head1 SUBROUTINES/METHODS
 
 =head2 new($params)
@@ -62,7 +63,7 @@ sub new
 {
     my ($class, $params) = @_;
 
-    return (undef)  if (!defined $params->{apikey});
+    return (undef) if (!defined $params->{apikey});
     my $ua = LWP::UserAgent->new;
     $ua->agent("WWW::PushBullet/$VERSION");
     $ua->credentials($PUSHBULLET{SERVER}, $PUSHBULLET{REALM}, $params->{apikey},
@@ -71,11 +72,27 @@ sub new
     my $self = {
         _ua     => $ua,
         _apikey => $params->{apikey},
+        _debug  => $params->{debug} || 0,
     };
 
     bless $self, $class;
 
     return ($self);
+}
+
+=head2 DEBUG
+
+Prints Debug message when '_debug' is enabled
+
+=cut
+
+sub DEBUG
+{
+    my ($self, $line) = @_;
+
+    printf "[DEBUG] %s\n", $line if ($self->{_debug});
+
+    return ($line);
 }
 
 =head2 api_key()
@@ -91,6 +108,23 @@ sub api_key
     my $self = shift;
 
     return ($self->{_apikey});
+}
+
+=head2 debug_mode
+
+Sets Debug mode
+
+    $pb->debug_mode(1);
+    
+=cut
+
+sub debug_mode
+{
+    my ($self, $mode) = shift;
+
+    $self->{_debug} = $mode;
+
+    return ($self->{_debug});
 }
 
 =head2 devices()
@@ -181,6 +215,7 @@ sub push_address
         name      => $params->{name},
         address   => $params->{address},
     ];
+    $self->DEBUG(sprintf('push_address: %s', dump($content)));
     my $result = $self->_pushes($content);
 
     return ($result);
@@ -203,6 +238,7 @@ sub push_file
         device_id => $params->{device_id},
         file      => [$params->{file}],
     ];
+    $self->DEBUG(sprintf('push_file: %s', dump($content)));
     my $result = $self->_pushes($content);
 
     return ($result);
@@ -232,7 +268,7 @@ sub push_link
         title     => $params->{title},
         url       => $params->{url},
     ];
-
+    $self->DEBUG(sprintf('push_link: %s', dump($content)));
     my $result = $self->_pushes($content);
 
     return ($result);
@@ -262,6 +298,7 @@ sub push_list
         title     => $params->{title},
         items     => $params->{items},
     ];
+    $self->DEBUG(sprintf('push_list: %s', dump($content)));
     my $result = $self->_pushes($content);
 
     return ($result);
@@ -291,6 +328,7 @@ sub push_note
         title     => $params->{title},
         body      => $params->{body},
     ];
+    $self->DEBUG(sprintf('push_note: %s', dump($content)));
     my $result = $self->_pushes($content);
 
     return ($result);
