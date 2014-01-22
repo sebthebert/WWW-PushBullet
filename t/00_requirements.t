@@ -1,8 +1,9 @@
 use strict;
 use warnings;
  
-use Test::More tests => 6;
+use Test::More tests => 7;
 
+use_ok 'Data::Dump';
 use_ok 'File::Slurp';
 use_ok 'FindBin';
 use_ok 'Getopt::Long'; 
