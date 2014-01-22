@@ -66,12 +66,18 @@ The easiest way to install WWW::PushBullet is [CPAN Minus](https://github.com/mi
     pushbullet note [ -k <pushbullet_apikey> ] [ -d <device_id> ]
         --title 'your title' --body 'your body message'
 
+To obtain the complete list of pushbullet command options:
+
+    pushbullet --help
+
+
 # Configuration
 
 You can configure default parameters in a JSON format configuration file:
 
     {
         "apikey":"",
+        "proxy":"",
         "default_device_id":[],
         "default_address":"1600 Amphitheatre Pkwy, Mountain View, CA 94043, Etats-Unis",
         "default_body":"This is a default title",

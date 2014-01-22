@@ -78,6 +78,10 @@ Sets url for 'pushbullet address'
 
 Prints WWW::PushBullet version
 
+=item B<-x>, B<--proxy>
+
+Sets proxy (with something like 'http://<proxy_url>:<pory_port>')
+
 =back
 
 =cut
@@ -155,6 +159,7 @@ my $status = GetOptions(
     'name|n=s',       # for 'pushbullet address'
     'title|t=s',      # for 'pushbullet note'
     'url|u=s',        # for 'pushbullet link, list & note'
+    'proxy|x=s',      # to set proxy
     'debug|D',        # to set debug mode
     'help|h',         # to print help
     'version|v',      # to print version
@@ -189,9 +194,10 @@ my $items = (
 );
 my $name  = $opt{name}  || $conf->{default_name};
 my $title = $opt{title} || $conf->{default_title};
+my $proxy = $opt{proxy} || $conf->{proxy};
 my $url   = $opt{url}   || $conf->{default_url};
 
-my $pb = WWW::PushBullet->new({apikey => $apikey, debug => $opt{debug}});
+my $pb = WWW::PushBullet->new({apikey => $apikey, proxy => $proxy, debug => $opt{debug}});
 
 if ((!scalar @devices) && ($opt{action} ne 'devices'))
 {

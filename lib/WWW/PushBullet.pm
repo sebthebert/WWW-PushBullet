@@ -37,7 +37,6 @@ use warnings;
 use Data::Dump qw(dump);
 use JSON;
 use LWP::UserAgent;
-use LWP::Protocol::https;
 
 our $VERSION = '0.9';
 
@@ -66,9 +65,10 @@ sub new
     return (undef) if (!defined $params->{apikey});
     my $ua = LWP::UserAgent->new;
     $ua->agent("WWW::PushBullet/$VERSION");
+    $ua->proxy('https', $params->{proxy})   if (defined $params->{proxy});
     $ua->credentials($PUSHBULLET{SERVER}, $PUSHBULLET{REALM}, $params->{apikey},
         '');
-
+    
     my $self = {
         _ua     => $ua,
         _apikey => $params->{apikey},
