@@ -10,6 +10,7 @@ WriteMakefile
   	VERSION_FROM => 'lib/WWW/PushBullet.pm',
 	EXE_FILES    => ['bin/pushbullet'],
 	PREREQ_PM    => {
+		'Data::Dump' => 0,
 		'File::Slurp' => 0,
 		'FindBin' => 0,
 		'Getopt::Long' => 0,
