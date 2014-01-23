@@ -1,5 +1,17 @@
 Revision history for WWW-PushBullet
 
+1.0     2014-01-23 01:45
+
+  * Proxy support added (-x/--proxy)
+  * Improved Test suite
+
+
+0.9     2014-01-22 01:00
+  
+  * better program options handling
+  * debug mode added
+
+
 0.8.2   2014-01-17 22:30
 
     * Code cleaning and documentation

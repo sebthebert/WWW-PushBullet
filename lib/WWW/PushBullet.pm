@@ -38,7 +38,7 @@ use Data::Dump qw(dump);
 use JSON;
 use LWP::UserAgent;
 
-our $VERSION = '0.9';
+our $VERSION = '1.0';
 
 my %PUSHBULLET = (
     REALM   => 'Pushbullet',
@@ -90,9 +90,15 @@ sub DEBUG
 {
     my ($self, $line) = @_;
 
-    printf "[DEBUG] %s\n", $line if ($self->{_debug});
+    if ($self->{_debug})
+    {
+        my $str = sprintf '[DEBUG] %s', $line;
+        printf "$str\n";
+        
+        return ($str);
+    }
 
-    return ($line);
+    return (undef);
 }
 
 =head2 api_key()
@@ -120,7 +126,7 @@ Sets Debug mode
 
 sub debug_mode
 {
-    my ($self, $mode) = shift;
+    my ($self, $mode) = @_;
 
     $self->{_debug} = $mode;
 

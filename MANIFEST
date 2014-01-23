@@ -9,3 +9,5 @@ bin/pushbullet
 conf/pushbullet.json
 lib/WWW/PushBullet.pm
 t/00_requirements.t
+t/01_WWW-PushBullet.t
+t/99_pod_coverage.t

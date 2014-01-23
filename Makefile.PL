@@ -6,7 +6,7 @@ use 5.008;
 use ExtUtils::MakeMaker;
 WriteMakefile
 (
-	NAME         => 'WWW-PushBullet',
+	NAME         => 'WWW::PushBullet',
   	VERSION_FROM => 'lib/WWW/PushBullet.pm',
 	EXE_FILES    => ['bin/pushbullet'],
 	PREREQ_PM    => {
