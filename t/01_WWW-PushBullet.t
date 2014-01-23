@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use FindBin; 
-use Test::More tests => 4 + 5 + 1;
+use Test::More tests => 4 + 2 + 1 + 5;
 
 use lib "$FindBin::Bin/../lib/";
 
@@ -28,10 +28,18 @@ ok((defined $pb2) && (ref $pb2 eq 'WWW::PushBullet'),
 my $api_key = $pb2->api_key();
 ok($api_key eq $INVALID_API_KEY, 'WWW::PushBullet->api_key() => api_key');
 
+my $debug_mode = $pb2->debug_mode(1);
+my $debug_str = $pb2->DEBUG('test');
+ok($debug_mode && ($debug_str eq '[DEBUG] test'), 'debug_mode on');
+
+$debug_mode = $pb2->debug_mode(0);
+$debug_str = $pb2->DEBUG('test');
+ok(!$debug_mode && !defined $debug_str, 'debug_mode off');
+
+my $version = $pb2->version();
+ok(defined $version && $version =~ /^\d+.*/, 'WWW::PushBullet->version() => version');
+
 foreach my $func ('push_address', 'push_file', 'push_link', 'push_list', 'push_note')
 {
     ok($pb2->can($func), 'WWW::PushBullet->' . $func . '() exists');
 }
-
-my $version = $pb2->version();
-ok(defined $version && $version =~ /^\d+.*/, 'WWW::PushBullet->version() => version');
