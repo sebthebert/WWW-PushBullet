@@ -1,0 +1,53 @@
+{
+   "abstract" : "Module giving easy access to PushBullet API",
+   "author" : [
+      "unknown"
+   ],
+   "dynamic_config" : 0,
+   "generated_by" : "ExtUtils::MakeMaker version 6.8, CPAN::Meta::Converter version 2.132830",
+   "license" : [
+      "unknown"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "WWW-PushBullet",
+   "no_index" : {
+      "directory" : [
+         "t",
+         "inc"
+      ]
+   },
+   "prereqs" : {
+      "build" : {
+         "requires" : {
+            "ExtUtils::MakeMaker" : "0"
+         }
+      },
+      "configure" : {
+         "requires" : {
+            "ExtUtils::MakeMaker" : "0"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "Data::Dump" : "0",
+            "File::Slurp" : "0",
+            "FindBin" : "0",
+            "Getopt::Long" : "0",
+            "JSON" : "0",
+            "LWP" : "0",
+            "Pod::Usage" : "0",
+            "Test::More" : "0"
+         }
+      }
+   },
+   "release_status" : "stable",
+   "resources" : {
+      "repository" : {
+         "url" : "https://github.com/sebthebert/WWW-PushBullet"
+      }
+   },
+   "version" : "v1.0.1"
+}

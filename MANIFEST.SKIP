@@ -1,0 +1,7 @@
+^\..+
+MANIFEST\..+
+_devel/*
+blib/*
+cover_db/*
+.+\.bak$
+WWW-PushBullet-.+.tar.gz
