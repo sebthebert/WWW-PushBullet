@@ -1,3 +1,5 @@
+# WWW-PushBullet [![Build Status](https://secure.travis-ci.org/sebthebert/WWW-PushBullet.png?branch=master)](http://travis-ci.org/sebthebert/WWW-PushBullet)
+
 # About
 
 This is a Perl module and program giving easy access to [PushBullet](https://www.pushbullet.com/) API from Perl.
