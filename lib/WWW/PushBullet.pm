@@ -355,6 +355,6 @@ sub version
 
 =head1 AUTHOR
 
-Sebastien Thebert <stt@ittool.org>
+Sebastien Thebert <www-pushbullet@onetool.pm>
 
 =cut
