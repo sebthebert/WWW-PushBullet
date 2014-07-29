@@ -1,4 +1,4 @@
-# WWW-PushBullet [![Build Status](https://secure.travis-ci.org/sebthebert/WWW-PushBullet.png?branch=master)](http://travis-ci.org/sebthebert/WWW-PushBullet)
+# WWW-PushBullet [![Build Status](https://secure.travis-ci.org/sebthebert/WWW-PushBullet.png?branch=master)](http://travis-ci.org/sebthebert/WWW-PushBullet) [![Coverage Status](https://coveralls.io/repos/sebthebert/WWW-PushBullet/badge.png)](https://coveralls.io/r/sebthebert/WWW-PushBullet)
 
 # About
 
