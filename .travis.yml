@@ -11,4 +11,4 @@ before_install:
 install: "dzil listdeps | xargs cpanm"
 script: 
   - "dzil test"
-  - "perl Build.PL && ./Build build && cover -test -report coveralls"
+  - "dzil cover && cover -test -report coveralls"
