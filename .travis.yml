@@ -7,7 +7,9 @@ perl:
   - "5.10"
 before_install:
   - "dzil authordeps | xargs cpanm"
+  - "cpanm -n Devel::Cover"
   - "cpanm -n Devel::Cover::Report::Coveralls"
+  - "cpanm Dist::Zilla::App::Command::cover"
 install: "dzil listdeps | xargs cpanm"
 script: 
   - "dzil test"
