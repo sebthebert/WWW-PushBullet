@@ -6,11 +6,13 @@ perl:
   - "5.12"
   - "5.10"
 before_install:
-  - "dzil authordeps | xargs cpanm"
-  - "cpanm -n Devel::Cover"
+  - "dzil authordeps | xargs cpanm""
   - "cpanm -n Devel::Cover::Report::Coveralls"
   - "cpanm Dist::Zilla::App::Command::cover"
 install: "dzil listdeps | xargs cpanm"
 script: 
+  - "PERL5OPT=-MDevel::Cover=-coverage,statement,branch,condition,path,subroutine prove -lrsv t"
+  - "cover"
   - "dzil test"
-  - "dzil cover && cover -test -report coveralls"
+after_success:
+  - "cover -report coveralls"
