@@ -357,7 +357,11 @@ sub version
  
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
- 
+
+=head1 REPOSITORY
+
+L<https://github.com/sebthebert/WWW-PushBullet>
+
 =head1 AUTHOR
 
 Sebastien Thebert <www-pushbullet@onetool.pm>
