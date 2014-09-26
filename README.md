@@ -54,7 +54,9 @@ The easiest way to install WWW::PushBullet is [CPAN Minus](https://github.com/mi
 
     pushbullet address [ -k <pushbullet_apikey> ] [ -d <device_id> ]
         --name 'address name' --address 'complete address'
-
+    
+    pushbullet contacts [ -k <pushbullet_apikey> ]
+    
     pushbullet devices [ -k <pushbullet_apikey> ]
     
     pushbullet file [ -k <pushbullet_apikey> ] [ -d <device_id> ] -f filename

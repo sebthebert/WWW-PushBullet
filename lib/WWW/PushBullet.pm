@@ -41,9 +41,10 @@ use LWP::UserAgent;
 our $VERSION = '1.0.3';
 
 my %PUSHBULLET = (
-    REALM   => 'Pushbullet',
-    SERVER  => 'api.pushbullet.com:443',
-    URL_API => 'https://api.pushbullet.com/api',
+    REALM     => 'Pushbullet',
+    SERVER    => 'api.pushbullet.com:443',
+    URL_API   => 'https://api.pushbullet.com/api',
+    URL_APIV2 => 'https://api.pushbullet.com/v2',
 );
 
 $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
@@ -131,6 +132,37 @@ sub debug_mode
     $self->{_debug} = $mode;
 
     return ($self->{_debug});
+}
+
+=head2 contacts()
+
+Returns list of contacts
+
+    my $contacts = $pb->contacts();
+    
+    foreach my $c (@{$contacts})
+    {
+        printf "Device '%s' => id %s\n", $d->{extras}->{model}, $d->{id};
+    }
+
+=cut
+
+sub contacts
+{
+    my $self = shift;
+
+    my $res = $self->{_ua}->get("$PUSHBULLET{URL_APIV2}/contacts");
+    
+    if ($res->is_success)
+    {
+        my $data = JSON->new->decode($res->content);
+        return ($data->{contacts});
+    }
+    else
+    {
+        print $res->status_line, "\n";
+        return (undef);
+    }
 }
 
 =head2 devices()

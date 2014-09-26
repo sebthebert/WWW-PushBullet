@@ -12,17 +12,19 @@ Program giving easy access to PushBullet features
 
     pushbullet address [ -k <pushbullet_apikey> ] [ -d <device_id> ]
         --name 'address name' --address 'complete address'
-        
+    
+    pushbullet contacts [ -k <pushbullet_apikey> ]
+    
     pushbullet devices [ -k <pushbullet_apikey> ]
     
     pushbullet file [ -k <pushbullet_apikey> ] [ -d <device_id> ] -f filename
     
     pushbullet link [ -k <pushbullet_apikey> ] [ -d <device_id> ]
         --title 'your title' --url 'http://address'
-        
+    
     pushbullet list [ -k <pushbullet_apikey> ] [ -d <device_id> ]
         --title 'your title' --item item1 --item item2 --item item3
-        
+    
     pushbullet note [ -k <pushbullet_apikey> ] [ -d <device_id> ]
         --title 'your title' --body 'your body message'
     
@@ -175,7 +177,7 @@ $opt{action} = $ARGV[0];
 
 pod2usage(0)
     if ((!defined $opt{action})
-    || ($opt{action} !~ /^(?:address|devices|file|link|list|note)$/));
+    || ($opt{action} !~ /^(?:address|contacts|devices|file|link|list|note)$/));
 my $conf = Read_Config_File($opt{config});
 
 my $apikey  = $opt{apikey}  || $conf->{apikey};
@@ -227,6 +229,14 @@ if ($opt{action} eq 'address')
     else
     {
         printf "pushbullet address --name name --address 'complete address'\n";
+    }
+}
+elsif ($opt{action} eq 'contacts')
+{
+    my $contacts = $pb->contacts();
+    foreach my $c (@{$contacts})
+    {
+        printf "Contact '%s' (%s) => %s\n", $c->{name}, $c->{iden}, $c->{email};
     }
 }
 elsif ($opt{action} eq 'devices')

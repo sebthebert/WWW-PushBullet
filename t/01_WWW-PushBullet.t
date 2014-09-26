@@ -2,13 +2,23 @@ use strict;
 use warnings;
 
 use FindBin; 
-use Test::More tests => 4 + 2 + 1 + 5;
+use Test::More;
 
 use lib "$FindBin::Bin/../lib/";
 
 use_ok 'WWW::PushBullet';
 
 use WWW::PushBullet;
+
+my @FUNCTIONS = qw{
+    contacts
+    devices
+    push_address
+    push_file
+    push_link
+    push_list
+    push_note
+    };
 
 my $INVALID_API_KEY = '1234567890';
 
@@ -39,7 +49,15 @@ ok(!$debug_mode && !defined $debug_str, 'debug_mode off');
 my $version = $pb2->version();
 ok(defined $version && $version =~ /^\d+.*/, 'WWW::PushBullet->version() => version');
 
-foreach my $func ('push_address', 'push_file', 'push_link', 'push_list', 'push_note')
+foreach my $func (@FUNCTIONS)
 {
     ok($pb2->can($func), 'WWW::PushBullet->' . $func . '() exists');
 }
+
+done_testing(4 + 2 + 1 + scalar @FUNCTIONS);
+
+=head1 AUTHOR
+
+Sebastien Thebert <www-pushbullet@onetool.pm>
+
+=cut
