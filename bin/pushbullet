@@ -207,7 +207,7 @@ if ((!scalar @devices) && ($opt{action} ne 'devices'))
     my $devs = $pb->devices();
     foreach my $d (@{$devs})
     {
-        push @devices, $d->{id};
+        push @devices, $d->{iden};
     }
 }
 
@@ -244,7 +244,8 @@ elsif ($opt{action} eq 'devices')
     my $devices = $pb->devices();
     foreach my $d (@{$devices})
     {
-        printf "Device '%s' => id %s\n", $d->{extras}->{model}, $d->{id};
+        printf "Device '%s' (%s) => id %s\n", 
+            $d->{nickname}, $d->{model}, $d->{iden};
     }
 }
 elsif ($opt{action} eq 'file')

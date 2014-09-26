@@ -43,7 +43,6 @@ our $VERSION = '1.0.3';
 my %PUSHBULLET = (
     REALM     => 'Pushbullet',
     SERVER    => 'api.pushbullet.com:443',
-    URL_API   => 'https://api.pushbullet.com/api',
     URL_APIV2 => 'https://api.pushbullet.com/v2',
 );
 
@@ -173,7 +172,8 @@ Returns list of devices
     
     foreach my $d (@{$devices})
     {
-        printf "Device '%s' => id %s\n", $d->{extras}->{model}, $d->{id};
+        printf "Device '%s' (%s)=> id %s\n", 
+            $d->{nickname}, $d->{model}, $d->{iden};
     }
 
 =cut
@@ -182,7 +182,7 @@ sub devices
 {
     my $self = shift;
 
-    my $res = $self->{_ua}->get("$PUSHBULLET{URL_API}/devices");
+    my $res = $self->{_ua}->get("$PUSHBULLET{URL_APIV2}/devices");
 
     if ($res->is_success)
     {
@@ -212,7 +212,7 @@ sub _pushes
         $type = $content->[$i + 1] if ($content->[$i] eq 'type');
     }
     my $res = $self->{_ua}->post(
-        "$PUSHBULLET{URL_API}/pushes",
+        "$PUSHBULLET{URL_APIV2}/pushes",
         Content_Type => ($type eq 'file' ? 'form-data' : undef),
         Content => $content
     );
