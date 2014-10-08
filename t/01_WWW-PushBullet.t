@@ -10,7 +10,7 @@ use_ok 'WWW::PushBullet';
 
 use WWW::PushBullet;
 
-my @FUNCTIONS = qw{
+my @pb_functions = qw{
     contacts
     devices
     push_address
@@ -49,12 +49,12 @@ ok(!$debug_mode && !defined $debug_str, 'debug_mode off');
 my $version = $pb2->version();
 ok(defined $version && $version =~ /^\d+.*/, 'WWW::PushBullet->version() => version');
 
-foreach my $func (@FUNCTIONS)
+foreach my $func (@pb_functions)
 {
     ok($pb2->can($func), 'WWW::PushBullet->' . $func . '() exists');
 }
 
-done_testing(4 + 2 + 1 + scalar @FUNCTIONS);
+done_testing(4 + 2 + 1 + scalar @pb_functions);
 
 =head1 AUTHOR
 

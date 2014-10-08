@@ -1,3 +1,4 @@
+package WWW::PushBullet;
 
 =head1 NAME
 
@@ -13,23 +14,21 @@ Module giving easy access to PushBullet API
     
     my $pb = WWW::PushBullet->new({apikey => $apikey});
     
-    $pb->push_address({ device_id => $device_id, name => $name, 
+    $pb->push_address({ device_iden => $device_iden, name => $name, 
         address => $address });
         
-    $pb->push_file({ device_id => $device_id, file => $filename);
+    $pb->push_file({ device_iden => $device_iden, file => $filename);
         
-    $pb->push_link({ device_id => $device_id, title => $title,
+    $pb->push_link({ device_iden => $device_iden, title => $title,
         url => $url });
         
-    $pb->push_list({ device_id => $device_id, title => $title, 
+    $pb->push_list({ device_iden => $device_iden, title => $title, 
         items => \@items });
         
-    $pb->push_note({ device_id => $device_id, title => $title,
+    $pb->push_note({ device_iden => $device_iden, title => $title,
         body => $body });
 
 =cut
-
-package WWW::PushBullet;
 
 use strict;
 use warnings;
@@ -38,7 +37,7 @@ use Data::Dump qw(dump);
 use JSON;
 use LWP::UserAgent;
 
-our $VERSION = '1.2.0';
+our $VERSION = '1.2.2';
 
 my %PUSHBULLET = (
     REALM     => 'Pushbullet',
@@ -121,7 +120,7 @@ sub api_key
 Sets Debug mode
 
     $pb->debug_mode(1);
-    
+
 =cut
 
 sub debug_mode
@@ -141,7 +140,7 @@ Returns list of contacts
     
     foreach my $c (@{$contacts})
     {
-        printf "Device '%s' => id %s\n", $d->{extras}->{model}, $d->{id};
+        printf "Contact '%s' (%s) => %s\n", $c->{name}, $c->{iden}, $c->{email};
     }
 
 =cut
@@ -235,9 +234,9 @@ Pushes address (with name & address)
 
     $pb->push_address(
         {
-            device_id => $device_id,
-            name      => 'GooglePlex',
-            address   => '1600 Amphitheatre Pkwy, Mountain View, CA 94043, Etats-Unis'
+            device_iden => $device_iden,
+            name        => 'GooglePlex',
+            address     => '1600 Amphitheatre Pkwy, Mountain View, CA 94043, Etats-Unis'
         }
         );
 
@@ -248,10 +247,10 @@ sub push_address
     my ($self, $params) = @_;
 
     my $content = [
-        type      => 'address',
-        device_id => $params->{device_id},
-        name      => $params->{name},
-        address   => $params->{address},
+        type        => 'address',
+        device_iden => $params->{device_iden},
+        name        => $params->{name},
+        address     => $params->{address},
     ];
     $self->DEBUG(sprintf('push_address: %s', dump($content)));
     my $result = $self->_pushes($content);
@@ -263,7 +262,7 @@ sub push_address
 
 Pushes file
 
-    $pb->push_file({ device_id => $device_id, file => '/var/www/index.html' });
+    $pb->push_file({ device_iden => $device_iden, file => '/var/www/index.html' });
 
 =cut
 
@@ -272,9 +271,9 @@ sub push_file
     my ($self, $params) = @_;
 
     my $content = [
-        type      => 'file',
-        device_id => $params->{device_id},
-        file      => [$params->{file}],
+        type        => 'file',
+        device_iden => $params->{device_iden},
+        file        => [$params->{file}],
     ];
     $self->DEBUG(sprintf('push_file: %s', dump($content)));
     my $result = $self->_pushes($content);
@@ -288,9 +287,9 @@ Pushes link (with title & url)
 
     $pb->push_link(
         {
-            device_id => $device_id,
-            title     => 'WWW::PushBullet Perl module on GitHub',
-            url       => 'https://github.com/sebthebert/WWW-PushBullet'
+            device_iden => $device_iden,
+            title       => 'WWW::PushBullet Perl module on GitHub',
+            url         => 'https://github.com/sebthebert/WWW-PushBullet'
         }
         );
 
@@ -301,10 +300,10 @@ sub push_link
     my ($self, $params) = @_;
 
     my $content = [
-        type      => 'link',
-        device_id => $params->{device_id},
-        title     => $params->{title},
-        url       => $params->{url},
+        type        => 'link',
+        device_iden => $params->{device_iden},
+        title       => $params->{title},
+        url         => $params->{url},
     ];
     $self->DEBUG(sprintf('push_link: %s', dump($content)));
     my $result = $self->_pushes($content);
@@ -318,9 +317,9 @@ Pushes list (with title & items)
 
     $pb->push_list(
         {
-            device_id => $device_id,
-            title     => 'One list with 3 items',
-            items     => [ 'One', 'Two', 'Three' ]
+            device_iden => $device_iden,
+            title       => 'One list with 3 items',
+            items       => [ 'One', 'Two', 'Three' ]
         }
         );
 
@@ -331,10 +330,10 @@ sub push_list
     my ($self, $params) = @_;
 
     my $content = [
-        type      => 'list',
-        device_id => $params->{device_id},
-        title     => $params->{title},
-        items     => $params->{items},
+        type        => 'list',
+        device_iden => $params->{device_iden},
+        title       => $params->{title},
+        items       => $params->{items},
     ];
     $self->DEBUG(sprintf('push_list: %s', dump($content)));
     my $result = $self->_pushes($content);
@@ -348,9 +347,9 @@ Pushes note (with title & body)
 
     $pb->push_note(
         {
-            device_id => $device_id,
-            title     => 'Note Title',
-            body      => 'Note Body'
+            device_iden => $device_iden,
+            title       => 'Note Title',
+            body        => 'Note Body'
         }
         );
 
@@ -361,10 +360,10 @@ sub push_note
     my ($self, $params) = @_;
 
     my $content = [
-        type      => 'note',
-        device_id => $params->{device_id},
-        title     => $params->{title},
-        body      => $params->{body},
+        type        => 'note',
+        device_iden => $params->{device_iden},
+        title       => $params->{title},
+        body        => $params->{body},
     ];
     $self->DEBUG(sprintf('push_note: %s', dump($content)));
     my $result = $self->_pushes($content);

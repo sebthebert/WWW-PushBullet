@@ -1,5 +1,11 @@
 Revision history for WWW-PushBullet Distribution
 
+1.2.2   2014-10-08 10:30
+
+  * Fixing device_id/device_iden issue 
+  reported on RT CPAN (https://rt.cpan.org/Public/Bug/Display.html?id=99178)
+
+
 1.2.0   2014-09-27 01:30
 
   * migration to PushBullet API v2

@@ -10,22 +10,22 @@ Program giving easy access to PushBullet features
 
 =head1 SYNOPSIS
 
-    pushbullet address [ -k <pushbullet_apikey> ] [ -d <device_id> ]
+    pushbullet address [ -k <pushbullet_apikey> ] [ -d <device_iden> ]
         --name 'address name' --address 'complete address'
     
     pushbullet contacts [ -k <pushbullet_apikey> ]
     
     pushbullet devices [ -k <pushbullet_apikey> ]
     
-    pushbullet file [ -k <pushbullet_apikey> ] [ -d <device_id> ] -f filename
+    pushbullet file [ -k <pushbullet_apikey> ] [ -d <device_iden> ] -f filename
     
-    pushbullet link [ -k <pushbullet_apikey> ] [ -d <device_id> ]
+    pushbullet link [ -k <pushbullet_apikey> ] [ -d <device_iden> ]
         --title 'your title' --url 'http://address'
     
-    pushbullet list [ -k <pushbullet_apikey> ] [ -d <device_id> ]
+    pushbullet list [ -k <pushbullet_apikey> ] [ -d <device_iden> ]
         --title 'your title' --item item1 --item item2 --item item3
     
-    pushbullet note [ -k <pushbullet_apikey> ] [ -d <device_id> ]
+    pushbullet note [ -k <pushbullet_apikey> ] [ -d <device_iden> ]
         --title 'your title' --body 'your body message'
     
 =head1 OPTIONS
@@ -186,7 +186,7 @@ my $body    = $opt{body}    || $conf->{default_body};
 my @devices = (
     defined $opt{device} && scalar @{$opt{device}}
     ? @{$opt{device}}
-    : (defined $conf->{default_device_id} ? @{$conf->{default_device_id}} : ())
+    : (defined $conf->{default_device_iden} ? @{$conf->{default_device_iden}} : ())
 );
 my $file = $opt{file} || $conf->{default_file};
 my $items = (
@@ -219,9 +219,9 @@ if ($opt{action} eq 'address')
         {
             $pb->push_address(
                 {
-                    device_id => $device,
-                    name      => $name,
-                    address   => $address
+                    device_iden => $device,
+                    name        => $name,
+                    address     => $address
                 }
             );
         }
@@ -254,7 +254,7 @@ elsif ($opt{action} eq 'file')
     {
         foreach my $device (@devices)
         {
-            $pb->push_file({device_id => $device, file => $file});
+            $pb->push_file({device_iden => $device, file => $file});
         }
     }
     else
@@ -270,7 +270,7 @@ elsif ($opt{action} eq 'link')
         {
             $pb->push_link(
                 {
-                    device_id => $device,
+                    device_iden => $device,
                     title     => $title,
                     url       => $url
                 }
@@ -290,7 +290,7 @@ elsif ($opt{action} eq 'list')
         {
             $pb->push_list(
                 {
-                    device_id => $device,
+                    device_iden => $device,
                     title     => $title,
                     items     => $items
                 }
@@ -311,7 +311,7 @@ elsif ($opt{action} eq 'note')
         {
             $pb->push_note(
                 {
-                    device_id => $device,
+                    device_iden => $device,
                     title     => $title,
                     body      => $body
                 }
