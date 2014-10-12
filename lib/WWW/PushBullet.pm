@@ -37,7 +37,7 @@ use Data::Dump qw(dump);
 use JSON;
 use LWP::UserAgent;
 
-our $VERSION = '1.2.2';
+our $VERSION = '1.2.4';
 
 my %PUSHBULLET = (
     REALM     => 'Pushbullet',
