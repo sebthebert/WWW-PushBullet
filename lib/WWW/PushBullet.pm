@@ -36,8 +36,9 @@ use warnings;
 use Data::Dump qw(dump);
 use JSON;
 use LWP::UserAgent;
+use MIME::Types;
 
-our $VERSION = '1.2.4';
+our $VERSION = '1.4.0';
 
 my %PUSHBULLET = (
     REALM     => 'Pushbullet',
@@ -205,21 +206,62 @@ sub _pushes
 {
     my ($self, $content) = @_;
 
-    my $type = undef;
-    foreach my $i (0 .. $#{$content})
-    {
-        $type = $content->[$i + 1] if ($content->[$i] eq 'type');
-    }
     my $res = $self->{_ua}->post(
         "$PUSHBULLET{URL_APIV2}/pushes",
-        Content_Type => ($type eq 'file' ? 'form-data' : undef),
-        Content => $content
+        Content_Type => 'application/json',
+        Content => JSON->new->encode($content)
     );
 
     if ($res->is_success)
     {
         my $data = JSON->new->decode($res->content);
         return ($data);
+    }
+    else
+    {
+        print $res->status_line, "\n";
+        return (undef);
+    }
+}
+
+=head2 _upload_request($file_name, $file_type)
+
+Upload request to AWS (used by push_file)
+
+=cut
+
+sub _upload_request
+{
+    my ($self, $file_name, $file_type) = @_;
+
+    my $res = $self->{_ua}->post(
+        "$PUSHBULLET{URL_APIV2}/upload-request",
+        Content_Type => undef,
+        Content => [ 
+            'file_name',    $file_name,
+            'file_type',    $file_type
+            ]
+    );
+
+    if ($res->is_success)
+    {
+        my $data = JSON->new->decode($res->content);
+        my @array_data = %{$data->{data}};
+        push @array_data, 'file', [ $file_name ];
+        my $res = $self->{_ua}->post(
+            $data->{upload_url},
+            Content_Type    => 'form-data',
+            Content         => \@array_data
+            );
+        if ($res->is_success)
+        {
+            return ($data->{file_url});
+        }
+        else
+        {
+            print $res->status_line, "\n";
+            return (undef);
+        }
     }
     else
     {
@@ -246,14 +288,9 @@ sub push_address
 {
     my ($self, $params) = @_;
 
-    my $content = [
-        type        => 'address',
-        device_iden => $params->{device_iden},
-        name        => $params->{name},
-        address     => $params->{address},
-    ];
-    $self->DEBUG(sprintf('push_address: %s', dump($content)));
-    my $result = $self->_pushes($content);
+    $params->{type} = 'address';
+    $self->DEBUG(sprintf('push_address: %s', dump($params)));
+    my $result = $self->_pushes($params);
 
     return ($result);
 }
@@ -262,7 +299,13 @@ sub push_address
 
 Pushes file
 
-    $pb->push_file({ device_iden => $device_iden, file => '/var/www/index.html' });
+    $pb->push_file(
+        { 
+            device_iden => $device_iden, 
+            file_name => '/var/www/index.html',
+            body => 'File Description'
+        }
+        );
 
 =cut
 
@@ -270,15 +313,21 @@ sub push_file
 {
     my ($self, $params) = @_;
 
-    my $content = [
-        type        => 'file',
-        device_iden => $params->{device_iden},
-        file        => [$params->{file}],
-    ];
-    $self->DEBUG(sprintf('push_file: %s', dump($content)));
-    my $result = $self->_pushes($content);
-
-    return ($result);
+    my $mt = MIME::Types->new();
+    my $type = $mt->mimeTypeOf($params->{file_name});
+    $self->DEBUG(sprintf('push_file: %s', dump($params)));
+    my $file_url = $self->_upload_request($params->{file_name}, $type->type());
+    if (defined $file_url)
+    {
+        $params->{type} = 'file';
+        $params->{file_type} = $type->type();
+        $params->{file_url} = $file_url;
+        my $result = $self->_pushes($params);
+        
+        return ($result);
+    }
+    
+    return (undef);
 }
 
 =head2 push_link($params)
@@ -299,14 +348,9 @@ sub push_link
 {
     my ($self, $params) = @_;
 
-    my $content = [
-        type        => 'link',
-        device_iden => $params->{device_iden},
-        title       => $params->{title},
-        url         => $params->{url},
-    ];
-    $self->DEBUG(sprintf('push_link: %s', dump($content)));
-    my $result = $self->_pushes($content);
+    $params->{type} = 'link';
+    $self->DEBUG(sprintf('push_link: %s', dump($params)));
+    my $result = $self->_pushes($params);
 
     return ($result);
 }
@@ -329,14 +373,10 @@ sub push_list
 {
     my ($self, $params) = @_;
 
-    my $content = [
-        type        => 'list',
-        device_iden => $params->{device_iden},
-        title       => $params->{title},
-        items       => $params->{items},
-    ];
-    $self->DEBUG(sprintf('push_list: %s', dump($content)));
-    my $result = $self->_pushes($content);
+    $params->{type} = 'list';
+    #$params->{items} = join(',', @{$params->{items}});
+    $self->DEBUG(sprintf('push_list: %s', dump($params)));
+    my $result = $self->_pushes($params);
 
     return ($result);
 }
@@ -359,14 +399,9 @@ sub push_note
 {
     my ($self, $params) = @_;
 
-    my $content = [
-        type        => 'note',
-        device_iden => $params->{device_iden},
-        title       => $params->{title},
-        body        => $params->{body},
-    ];
-    $self->DEBUG(sprintf('push_note: %s', dump($content)));
-    my $result = $self->_pushes($content);
+    $params->{type} = 'note';
+    $self->DEBUG(sprintf('push_note: %s', dump($params)));
+    my $result = $self->_pushes($params);
 
     return ($result);
 }

@@ -17,7 +17,8 @@ Program giving easy access to PushBullet features
     
     pushbullet devices [ -k <pushbullet_apikey> ]
     
-    pushbullet file [ -k <pushbullet_apikey> ] [ -d <device_iden> ] -f filename
+    pushbullet file [ -k <pushbullet_apikey> ] [ -d <device_iden> ] 
+        --file filename [ --body 'description' ]
     
     pushbullet link [ -k <pushbullet_apikey> ] [ -d <device_iden> ]
         --title 'your title' --url 'http://address'
@@ -38,7 +39,7 @@ Sets address for 'pushbullet address'
 
 =item B<-b>, B<--body>
 
-Sets body for 'pushbullet note'
+Sets body/description for 'pushbullet file' or 'pusbullet note'
 
 =item B<-c>, B<--config>
 
@@ -152,7 +153,7 @@ sub Read_Config_File
 my $status = GetOptions(
     \%opt,
     'address|a=s',    # for 'pushbullet address'
-    'body|b=s',       # for 'pushbullet note'
+    'body|b=s',       # for 'pushbullet file & note'
     'config|c=s',     # to change configuration file
     'device|d=s@',    # to specify device
     'file|f=s',       # for 'pushbullet file'
@@ -254,7 +255,7 @@ elsif ($opt{action} eq 'file')
     {
         foreach my $device (@devices)
         {
-            $pb->push_file({device_iden => $device, file => $file});
+            $pb->push_file({device_iden => $device, file_name => $file, body => $body});
         }
     }
     else
