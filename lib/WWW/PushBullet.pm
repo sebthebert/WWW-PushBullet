@@ -65,10 +65,10 @@ sub new
     return (undef) if (!defined $params->{apikey});
     my $ua = LWP::UserAgent->new;
     $ua->agent("WWW::PushBullet/$VERSION");
-    $ua->proxy('https', $params->{proxy})   if (defined $params->{proxy});
-    $ua->credentials($PUSHBULLET{SERVER}, $PUSHBULLET{REALM}, $params->{apikey},
-        '');
-    
+    $ua->proxy('https', $params->{proxy}) if (defined $params->{proxy});
+    $ua->credentials($PUSHBULLET{SERVER}, $PUSHBULLET{REALM},
+        $params->{apikey}, '');
+
     my $self = {
         _ua     => $ua,
         _apikey => $params->{apikey},
@@ -94,7 +94,7 @@ sub DEBUG
     {
         my $str = sprintf '[DEBUG] %s', $line;
         printf "$str\n";
-        
+
         return ($str);
     }
 
@@ -151,7 +151,7 @@ sub contacts
     my $self = shift;
 
     my $res = $self->{_ua}->get("$PUSHBULLET{URL_APIV2}/contacts");
-    
+
     if ($res->is_success)
     {
         my $data = JSON->new->decode($res->content);
@@ -209,7 +209,7 @@ sub _pushes
     my $res = $self->{_ua}->post(
         "$PUSHBULLET{URL_APIV2}/pushes",
         Content_Type => 'application/json',
-        Content => JSON->new->encode($content)
+        Content      => JSON->new->encode($content)
     );
 
     if ($res->is_success)
@@ -237,22 +237,19 @@ sub _upload_request
     my $res = $self->{_ua}->post(
         "$PUSHBULLET{URL_APIV2}/upload-request",
         Content_Type => undef,
-        Content => [ 
-            'file_name',    $file_name,
-            'file_type',    $file_type
-            ]
+        Content      => ['file_name', $file_name, 'file_type', $file_type]
     );
 
     if ($res->is_success)
     {
-        my $data = JSON->new->decode($res->content);
+        my $data       = JSON->new->decode($res->content);
         my @array_data = %{$data->{data}};
-        push @array_data, 'file', [ $file_name ];
+        push @array_data, 'file', [$file_name];
         my $res = $self->{_ua}->post(
             $data->{upload_url},
-            Content_Type    => 'form-data',
-            Content         => \@array_data
-            );
+            Content_Type => 'form-data',
+            Content      => \@array_data
+        );
         if ($res->is_success)
         {
             return ($data->{file_url});
@@ -313,20 +310,20 @@ sub push_file
 {
     my ($self, $params) = @_;
 
-    my $mt = MIME::Types->new();
+    my $mt   = MIME::Types->new();
     my $type = $mt->mimeTypeOf($params->{file_name});
     $self->DEBUG(sprintf('push_file: %s', dump($params)));
     my $file_url = $self->_upload_request($params->{file_name}, $type->type());
     if (defined $file_url)
     {
-        $params->{type} = 'file';
+        $params->{type}      = 'file';
         $params->{file_type} = $type->type();
-        $params->{file_url} = $file_url;
+        $params->{file_url}  = $file_url;
         my $result = $self->_pushes($params);
-        
+
         return ($result);
     }
-    
+
     return (undef);
 }
 
@@ -374,6 +371,7 @@ sub push_list
     my ($self, $params) = @_;
 
     $params->{type} = 'list';
+
     #$params->{items} = join(',', @{$params->{items}});
     $self->DEBUG(sprintf('push_list: %s', dump($params)));
     my $result = $self->_pushes($params);

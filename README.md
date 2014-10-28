@@ -14,7 +14,7 @@ You can get your API key in your [PushBullet account settings](https://www.pushb
 
 You also need this Perl modules:
 
-  * [Data::Dump](https://metacpan.org/pod/Data::Dump)
+  * [Data::Dump](https://metacpan.org/release/Data-Dump)
   * [File::Slurp](https://metacpan.org/release/File-Slurp)
   * [FindBin](https://metacpan.org/pod/FindBin)
   * [Getopt::Long](https://metacpan.org/release/Getopt-Long)
@@ -59,7 +59,8 @@ The easiest way to install WWW::PushBullet is [CPAN Minus](https://github.com/mi
     
     pushbullet devices [ -k <pushbullet_apikey> ]
     
-    pushbullet file [ -k <pushbullet_apikey> ] [ -d <device_iden> ] -f filename
+    pushbullet file [ -k <pushbullet_apikey> ] [ -d <device_iden> ] 
+        --file filename [ --body 'file description' ]
     
     pushbullet link [ -k <pushbullet_apikey> ] [ -d <device_iden> ]
         --title 'your title' --url 'http://address'

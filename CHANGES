@@ -1,5 +1,10 @@
 Revision history for WWW-PushBullet Distribution
 
+1.4.0   2014-10-28 22:30
+
+  * Many changes to handle new PushBullet API
+
+
 1.2.4	2014-10-12 22:30
 
   * Improving distribution Kwalitee
