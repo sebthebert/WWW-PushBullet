@@ -63,7 +63,7 @@ sub new
     my ($class, $params) = @_;
 
     return (undef) if (!defined $params->{apikey});
-    my $ua = LWP::UserAgent->new;
+    my $ua = $params->{ua} || LWP::UserAgent->new;
     $ua->agent("WWW::PushBullet/$VERSION");
     $ua->proxy('https', $params->{proxy}) if (defined $params->{proxy});
     $ua->credentials($PUSHBULLET{SERVER}, $PUSHBULLET{REALM},
