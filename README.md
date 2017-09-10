@@ -94,3 +94,26 @@ You can configure default parameters in a JSON format configuration file:
 This configuration file is by default **./conf/pushbullet.json** but you can also specify another file with the **-c/--config** option.
 
 If you don't specify device_iden (**-d/--device** or in configuration file), it will **push to all devices** of this apikey account.
+
+# Compilation from source
+
+If you want to compile from source, you will need these modules installed:
+
+     Probe::Perl
+     Dist::Zilla
+     Dist::Zilla::Plugin::RewriteVersion
+     Dist::Zilla::Plugin::MetaProvides::Package
+     Dist::Zilla::Plugin::CheckChangeLog
+     Dist::Zilla::Plugin::GitHub::Meta
+     Dist::Zilla::Plugin::MinimumPerl
+     Dist::Zilla::Plugin::PerlTidy
+     Dist::Zilla::Plugin::Test::Perl::Critic
+     Dist::Zilla::Plugin::Test::Kwalitee::Extra	
+
+Then you can
+
+     dzil build
+     dzil test
+     dzil release
+     
+which will create a release in the subfolder WWW-PushBullet-<version>, that you can then make and install following the standard instructions above.
