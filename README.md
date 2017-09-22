@@ -30,29 +30,37 @@ Get the latest release of WWW::PushBullet on GitHub.
     
 Extract sources from the file you get:
 
-    tar xvfz WWW-PushBullet-<version>.tar.gz
-    
+```shell
+tar xvfz WWW-PushBullet-<version>.tar.gz
+```
+
 Generate a Makefile:
 
-    cd WWW-PushBullet-<version>
-    perl Makefile.PL 
+```shell
+cd WWW-PushBullet-<version>
+perl Makefile.PL 
+```
 
 Install the package:
-    
-    make
-    make test
-    make install
+
+```shell
+make
+make test
+make install
+```
 
 ## Installation from CPAN Minus
 
 The easiest way to install WWW::PushBullet is [CPAN Minus](https://github.com/miyagawa/cpanminus):
 
-    cpanm WWW::PushBullet
-
+```shell
+cpanm WWW::PushBullet
+```
 
 # Usage
 
-    pushbullet address [ -k <pushbullet_apikey> ] [ -d <device_iden> ]
+```shell
+    pushbullet address [ -k <pushbullet_apikey> ] [ -d <device_iden> ]
         --name 'address name' --address 'complete address'
     
     pushbullet contacts [ -k <pushbullet_apikey> ]
@@ -70,11 +78,13 @@ The easiest way to install WWW::PushBullet is [CPAN Minus](https://github.com/mi
     
     pushbullet note [ -k <pushbullet_apikey> ] [ -d <device_iden> ]
         --title 'your title' --body 'your body message'
+```
 
 To obtain the complete list of pushbullet command options:
 
-    pushbullet --help
-
+```shell
+pushbullet --help
+```
 
 # Configuration
 
@@ -97,23 +107,35 @@ If you don't specify device_iden (**-d/--device** or in configuration file), it 
 
 # Compilation from source
 
-If you want to compile from source, you will need these modules installed:
+If you want to compile from source (and contribute ?), you will need:
 
-     Probe::Perl
-     Dist::Zilla
-     Dist::Zilla::Plugin::RewriteVersion
-     Dist::Zilla::Plugin::MetaProvides::Package
-     Dist::Zilla::Plugin::CheckChangeLog
-     Dist::Zilla::Plugin::GitHub::Meta
-     Dist::Zilla::Plugin::MinimumPerl
-     Dist::Zilla::Plugin::PerlTidy
-     Dist::Zilla::Plugin::Test::Perl::Critic
-     Dist::Zilla::Plugin::Test::Kwalitee::Extra	
+  * cpanminus
+  * gcc
+  * git
+  * libnet-ssleay-perl
+  * libssl-dev
+  * openssl
+  * make
+  
+and these Perl modules installed:
 
-Then you can
+  * Probe::Perl
+  * Dist::Zilla
+  * Dist::Zilla::Plugin::RewriteVersion
+  * Dist::Zilla::Plugin::MetaProvides::Package
+  * Dist::Zilla::Plugin::CheckChangeLog
+  * Dist::Zilla::Plugin::GitHub::Meta
+  * Dist::Zilla::Plugin::MinimumPerl
+  * Dist::Zilla::Plugin::PerlTidy
+  * Dist::Zilla::Plugin::Test::Perl::Critic
+  * Dist::Zilla::Plugin::Test::Kwalitee::Extra	
+
+(all Dist::Zilla::Plugin::* could be installed with `dzil authordeps --missing | cpanm`)
+
+Then you can build and test with DistZilla:
 
      dzil build
      dzil test
      dzil release
      
-which will create a release in the subfolder WWW-PushBullet-<version>, that you can then make and install following the standard instructions above.
+which will create a release in the subfolder `WWW-PushBullet-<version>`, that you can then make and install following the standard instructions above.
