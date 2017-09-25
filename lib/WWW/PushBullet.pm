@@ -40,7 +40,7 @@ use JSON;
 use LWP::UserAgent;
 use MIME::Types;
 
-our $VERSION = '1.4.0';
+our $VERSION = '1.5';
 
 my %PUSHBULLET = (
     REALM     => 'Pushbullet',
