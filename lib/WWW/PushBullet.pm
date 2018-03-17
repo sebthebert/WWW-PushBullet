@@ -40,7 +40,7 @@ use JSON;
 use LWP::UserAgent;
 use MIME::Types;
 
-our $VERSION = '1.4.0';
+our $VERSION = 'v1.6.0';
 
 my %PUSHBULLET = (
     REALM     => 'Pushbullet',
@@ -75,6 +75,7 @@ sub new
         _ua     => $ua,
         _apikey => $params->{apikey},
         _debug  => $params->{debug} || 0,
+	_limits => undef
     };
 
     bless $self, $class;
@@ -135,6 +136,28 @@ sub debug_mode
     return ($self->{_debug});
 }
 
+sub _update_limits
+{
+	my ($self, $response) = @_;
+
+	my $limits = { 
+		limit => $response->header('X-Ratelimit-Limit'), 
+		remaining => $response->header('X-Ratelimit-Remaining'), 
+		reset => $response->header('X-Ratelimit-Reset')
+		};
+
+	$self->{_limits} = $limits;			
+}
+
+sub print_limits
+{
+	my $self = shift;
+
+	my $l = $self->{_limits};
+	printf "Limits limit: %s - remainingg: %s - reset %s\n",
+		$l->{limit}, $l->{remaining},  $l->{reset};
+}
+
 =head2 contacts()
 
 Returns list of contacts
@@ -156,6 +179,7 @@ sub contacts
 
     if ($res->is_success)
     {
+		$self->_update_limits($res);
         my $data = JSON->new->decode($res->content);
         return ($data->{contacts});
     }
@@ -187,7 +211,8 @@ sub devices
     my $res = $self->{_ua}->get("$PUSHBULLET{URL_APIV2}/devices");
 
     if ($res->is_success)
-    {
+    {	
+		$self->_update_limits($res);
         my $data = JSON->new->decode($res->content);
         return ($data->{devices});
     }
@@ -216,6 +241,7 @@ sub _ephemerals
 
     if ($res->is_success)
     {
+		$self->_update_limits($res);
         my $data = JSON->new->decode($res->content);
         return ($data);
     }
@@ -244,6 +270,7 @@ sub _pushes
 
     if ($res->is_success)
     {
+		$self->_update_limits($res);
         my $data = JSON->new->decode($res->content);
         return ($data);
     }
@@ -272,6 +299,7 @@ sub _upload_request
 
     if ($res->is_success)
     {
+		$self->_update_limits($res);
         my $data       = JSON->new->decode($res->content);
         my @array_data = %{$data->{data}};
         push @array_data, 'file', [$file_name];
@@ -282,6 +310,7 @@ sub _upload_request
         );
         if ($res->is_success)
         {
+			$self->_update_limits($res);
             return ($data->{file_url});
         }
         else
@@ -481,6 +510,7 @@ sub user_info
 
     if ($res->is_success)
     {
+		$self->_update_limits($res);
         my $data = JSON->new->decode($res->content);
         return ($data);
     }
