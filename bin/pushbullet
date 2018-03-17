@@ -181,7 +181,7 @@ my $status = GetOptions(
 pod2usage(0) if ((!$status) || ($opt{help}));
 if ($opt{version})
 {
-    printf "WWW::PushBullet v%s\n", WWW::PushBullet::version();
+    printf "WWW::PushBullet %s\n", WWW::PushBullet::version();
     exit 0;
 }
 
@@ -350,7 +350,7 @@ elsif ($opt{action} eq 'sms')
             {
                 conversation_iden => $mobile,
                 message => $sms,
-                target_device_iden => $conf->{default_sms_device}#($devices[0] || $conf->{default_sms_device})
+                target_device_iden => ($devices[0] || $conf->{default_sms_device})
            	}
             );
     }
@@ -359,6 +359,8 @@ elsif ($opt{action} eq 'sms')
         printf "pushbullet sms --phone 'dest mobile number' --sms 'your sms'\n";
     }
 }
+
+$pb->print_limits();
 
 =head1 LICENSE
  
