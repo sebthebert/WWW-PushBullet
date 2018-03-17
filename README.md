@@ -60,7 +60,7 @@ cpanm WWW::PushBullet
 # Usage
 
 ```shell
-    pushbullet address [ -k <pushbullet_apikey> ] [ -d <device_iden> ]
+    pushbullet address [ -k <pushbullet_apikey> ] [ -d <device_iden> ]
         --name 'address name' --address 'complete address'
     
     pushbullet contacts [ -k <pushbullet_apikey> ]
@@ -78,6 +78,9 @@ cpanm WWW::PushBullet
     
     pushbullet note [ -k <pushbullet_apikey> ] [ -d <device_iden> ]
         --title 'your title' --body 'your body message'
+    
+    pushbullet sms [ -k <pushbullet_apikey> ] [ -d <device_iden> ]
+        --mobile '+33 6 xx xx xx xx' --sms 'your sms'
 ```
 
 To obtain the complete list of pushbullet command options:
