@@ -9,10 +9,17 @@ use lib "$FindBin::Bin/../lib/";
 
 my $mock = Test::LWP::UserAgent->new(network_fallback => 0);
 
+my @http_headers = (
+	'Content-Type' => 'text/json', 
+        'X-Ratelimit-Limit' => 42, 
+        'X-Ratelimit-Remaining' => 42,
+        'X-Ratelimit-Reset' => 42
+	);
+
 # Mocking mapping begin
 $mock->map_response(
     qr{/v2/contacts}, 
-    HTTP::Response->new('200', 'OK', ['Content-Type' => 'text/json'],
+    HTTP::Response->new('200', 'OK', \@http_headers,
         '{
   "contacts": [
     {
@@ -38,7 +45,7 @@ $mock->map_response(
     
 $mock->map_response(
     qr{/v2/devices}, 
-    HTTP::Response->new('200', 'OK', ['Content-Type' => 'text/json'], 
+    HTTP::Response->new('200', 'OK', \@http_headers,
         '{
   "devices": [
     {
