@@ -141,9 +141,9 @@ sub _update_limits
 	my ($self, $response) = @_;
 
 	my $limits = { 
-		limit => $response->header('X-Ratelimit-Limit'), 
-		remaining => $response->header('X-Ratelimit-Remaining'), 
-		reset => $response->header('X-Ratelimit-Reset')
+		'limit' 	=> $response->header('X-Ratelimit-Limit'), 
+		'remaining' 	=> $response->header('X-Ratelimit-Remaining'), 
+		'reset' 	=> $response->header('X-Ratelimit-Reset')
 		};
 
 	$self->{_limits} = $limits;			
