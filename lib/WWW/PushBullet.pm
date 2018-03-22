@@ -13,20 +13,14 @@ Module giving easy access to PushBullet API
 =head1 SYNOPSIS
 
     use WWW::PushBullet;
-    
+
     my $pb = WWW::PushBullet->new({apikey => $apikey});
-    
-    $pb->push_address({ device_iden => $device_iden, name => $name, 
-        address => $address });
-        
+
     $pb->push_file({ device_iden => $device_iden, file => $filename);
-        
+
     $pb->push_link({ device_iden => $device_iden, title => $title,
         url => $url });
-        
-    $pb->push_list({ device_iden => $device_iden, title => $title, 
-        items => \@items });
-        
+
     $pb->push_note({ device_iden => $device_iden, title => $title,
         body => $body });
 
@@ -40,7 +34,7 @@ use JSON;
 use LWP::UserAgent;
 use MIME::Types;
 
-our $VERSION = 'v1.6.0';
+our $VERSION = 'v1.8.0';
 
 my %PUSHBULLET = (
     REALM     => 'Pushbullet',
@@ -140,22 +134,25 @@ sub _update_limits
 {
 	my ($self, $response) = @_;
 
-	my $limits = { 
-		'limit' 	=> $response->header('X-Ratelimit-Limit'), 
-		'remaining' 	=> $response->header('X-Ratelimit-Remaining'), 
+	my $limits = {
+		'limit' 	=> $response->header('X-Ratelimit-Limit'),
+		'remaining' 	=> $response->header('X-Ratelimit-Remaining'),
 		'reset' 	=> $response->header('X-Ratelimit-Reset')
 		};
 
-	$self->{_limits} = $limits;			
+	$self->{_limits} = $limits;
 }
 
 sub print_limits
 {
-	my $self = shift;
+    my $self = shift;
+    use POSIX 'strftime';
 
-	my $l = $self->{_limits};
-	printf "Limits limit: %s - remainingg: %s - reset %s\n",
-		$l->{limit}, $l->{remaining},  $l->{reset};
+
+    my $l = $self->{_limits};
+    my $datetime = strftime '%c', localtime $l->{reset};
+    printf "[API Limits: %s / %s (next reset: %s)]\n",
+        $l->{remaining}, $l->{limit},  $datetime;
 }
 
 =head2 contacts()
@@ -163,7 +160,7 @@ sub print_limits
 Returns list of contacts
 
     my $contacts = $pb->contacts();
-    
+
     foreach my $c (@{$contacts})
     {
         printf "Contact '%s' (%s) => %s\n", $c->{name}, $c->{iden}, $c->{email};
@@ -191,14 +188,14 @@ sub contacts
 }
 
 =head2 devices()
-    
+
 Returns list of devices
 
     my $devices = $pb->devices();
-    
+
     foreach my $d (@{$devices})
     {
-        printf "Device '%s' (%s)=> id %s\n", 
+        printf "Device '%s' (%s)=> id %s\n",
             $d->{nickname}, $d->{model}, $d->{iden};
     }
 
@@ -211,8 +208,8 @@ sub devices
     my $res = $self->{_ua}->get("$PUSHBULLET{URL_APIV2}/devices");
 
     if ($res->is_success)
-    {	
-		$self->_update_limits($res);
+    {
+        $self->_update_limits($res);
         my $data = JSON->new->decode($res->content);
         return ($data->{devices});
     }
@@ -326,38 +323,13 @@ sub _upload_request
     }
 }
 
-=head2 push_address($params)
-
-Pushes address (with name & address)
-
-    $pb->push_address(
-        {
-            device_iden => $device_iden,
-            name        => 'GooglePlex',
-            address     => '1600 Amphitheatre Pkwy, Mountain View, CA 94043, Etats-Unis'
-        }
-        );
-
-=cut
-
-sub push_address
-{
-    my ($self, $params) = @_;
-
-    $params->{type} = 'address';
-    $self->DEBUG(sprintf('push_address: %s', dump($params)));
-    my $result = $self->_pushes($params);
-
-    return ($result);
-}
-
 =head2 push_file($params)
 
 Pushes file
 
     $pb->push_file(
-        { 
-            device_iden => $device_iden, 
+        {
+            device_iden => $device_iden,
             file_name => '/var/www/index.html',
             body => 'File Description'
         }
@@ -406,33 +378,6 @@ sub push_link
 
     $params->{type} = 'link';
     $self->DEBUG(sprintf('push_link: %s', dump($params)));
-    my $result = $self->_pushes($params);
-
-    return ($result);
-}
-
-=head2 push_list($params)
-
-Pushes list (with title & items)
-
-    $pb->push_list(
-        {
-            device_iden => $device_iden,
-            title       => 'One list with 3 items',
-            items       => [ 'One', 'Two', 'Three' ]
-        }
-        );
-
-=cut
-
-sub push_list
-{
-    my ($self, $params) = @_;
-
-    $params->{type} = 'list';
-
-    #$params->{items} = join(',', @{$params->{items}});
-    $self->DEBUG(sprintf('push_list: %s', dump($params)));
     my $result = $self->_pushes($params);
 
     return ($result);
@@ -491,7 +436,7 @@ sub push_sms
     $self->DEBUG(sprintf('push_sms: %s', dump($ephemeral)));
     my $result = $self->_ephemerals($ephemeral);
 
-    return ($result);	
+    return ($result);
 }
 
 =head2 user_info()
@@ -535,7 +480,7 @@ sub version
 1;
 
 =head1 LICENSE
- 
+
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
 

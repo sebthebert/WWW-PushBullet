@@ -12,35 +12,25 @@ Program giving easy access to PushBullet features
 
 =head1 SYNOPSIS
 
-    pushbullet address [ -k <pushbullet_apikey> ] [ -d <device_iden> ]
-        --name 'address name' --address 'complete address'
-    
     pushbullet contacts [ -k <pushbullet_apikey> ]
-    
+
     pushbullet devices [ -k <pushbullet_apikey> ]
-    
-    pushbullet file [ -k <pushbullet_apikey> ] [ -d <device_iden> ] 
+
+    pushbullet file [ -k <pushbullet_apikey> ] [ -d <device_iden> ]
         --file filename [ --body 'file description' ]
-    
+
     pushbullet link [ -k <pushbullet_apikey> ] [ -d <device_iden> ]
         --title 'your title' --url 'http://address'
-    
-    pushbullet list [ -k <pushbullet_apikey> ] [ -d <device_iden> ]
-        --title 'your title' --item item1 --item item2 --item item3
-    
+
     pushbullet note [ -k <pushbullet_apikey> ] [ -d <device_iden> ]
         --title 'your title' --body 'your body message'
-    
+
     pushbullet sms [ -k <pushbullet_apikey> ] [ -d <device_iden> ]
         --mobile '+33 6 xx xx xx xx' --sms 'your sms'
-    
+
 =head1 OPTIONS
 
 =over 4
-
-=item B<-a>, B<--address>
-
-Sets address for 'pushbullet address'
 
 =item B<-b>, B<--body>
 
@@ -74,23 +64,19 @@ Sets PushBullet API key
 
 Sets mobile phone number for 'pushbullet sms'
 
-=item B<-n>, B<--name>
-
-Sets name for 'pushbullet address'
-
 =item B<-s>, B<--sms>
 
 Sets SMS message for 'pushbullet sms'
 
 =item B<-t>, B<--title>
 
-Sets title for 'pushbullet link', 'pushbullet list' or 'pushbullet note'
+Sets title for 'pushbullet link' or 'pushbullet note'
 
 =item B<-u>, B<--url>
 
-Sets url for 'pushbullet address'
+Sets url for 'pushbullet link'
 
-=item B<-v>, B<--version>    
+=item B<-v>, B<--version>
 
 Prints WWW::PushBullet version
 
@@ -161,18 +147,15 @@ sub Read_Config_File
 
 my $status = GetOptions(
     \%opt,
-    'address|a=s',    # for 'pushbullet address'
     'body|b=s',       # for 'pushbullet file & note'
     'config|c=s',     # to change configuration file
     'device|d=s@',    # to specify device
     'file|f=s',       # for 'pushbullet file'
-    'item|i=s@',      # for 'pushbullet list'
     'apikey|k=s',     # to specify user apikey
     'mobile|m=s',     # for 'pushbullet sms'
-    'name|n=s',       # for 'pushbullet address'
 	'sms|s=s',		  # for 'pushbullet sms'
     'title|t=s',      # for 'pushbullet note'
-    'url|u=s',        # for 'pushbullet link, list & note'
+    'url|u=s',        # for 'pushbullet link & note'
     'proxy|x=s',      # to set proxy
     'debug|D',        # to set debug mode
     'help|h',         # to print help
@@ -187,14 +170,13 @@ if ($opt{version})
 
 $opt{action} = $ARGV[0];
 
-my $qr_action_list = qr/^(?:address|contacts|devices|file|link|list|note|sms)$/;
+my $qr_action_list = qr/^(?:contacts|devices|file|link|note|sms)$/;
 pod2usage(0)
     if ((!defined $opt{action}) || ($opt{action} !~ $qr_action_list));
 
 my $conf = Read_Config_File($opt{config});
 
 my $apikey  = $opt{apikey}  || $conf->{apikey};
-my $address = $opt{address} || $conf->{default_address};
 my $body    = $opt{body}    || $conf->{default_body};
 my @devices = (
     defined $opt{device} && scalar @{$opt{device}}
@@ -207,7 +189,6 @@ my $items = (
     ? $opt{item}
     : $conf->{default_items}
 );
-my $name  = $opt{name}  || $conf->{default_name};
 my $title = $opt{title} || $conf->{default_title};
 my $proxy = $opt{proxy} || $conf->{proxy};
 my $url   = $opt{url}   || $conf->{default_url};
@@ -216,8 +197,8 @@ my $mobile = $opt{mobile} || $conf->{default_sms_mobile};
 my $sms = $opt{sms};
 
 my $pb = WWW::PushBullet->new({
-    apikey => $apikey, 
-    proxy  => $proxy, 
+    apikey => $apikey,
+    proxy  => $proxy,
     debug  => $opt{debug}});
 
 if ((!scalar @devices) && ($opt{action} ne 'devices'))
@@ -230,27 +211,7 @@ if ((!scalar @devices) && ($opt{action} ne 'devices'))
     }
 }
 
-if ($opt{action} eq 'address')
-{
-    if ((defined $name) && (defined $address))
-    {
-        foreach my $device (@devices)
-        {
-            $pb->push_address(
-                {
-                    device_iden => $device,
-                    name        => $name,
-                    address     => $address
-                }
-            );
-        }
-    }
-    else
-    {
-        printf "pushbullet address --name name --address 'complete address'\n";
-    }
-}
-elsif ($opt{action} eq 'contacts')
+if ($opt{action} eq 'contacts')
 {
     my $contacts = $pb->contacts();
     foreach my $c (@{$contacts})
@@ -265,7 +226,7 @@ elsif ($opt{action} eq 'devices')
     {
 	if ($d->{active})
 	{
-        	printf "Device '%s' (%s) => id %s\n", 
+        	printf "Device '%s' (%s) => id %s\n",
             		$d->{nickname}, $d->{model}, $d->{iden};
 	}
     }
@@ -302,27 +263,6 @@ elsif ($opt{action} eq 'link')
     else
     {
         printf "pushbullet link --title title --url http://address\n";
-    }
-}
-elsif ($opt{action} eq 'list')
-{
-    if ((defined $title) && (scalar @{$items}))
-    {
-        foreach my $device (@devices)
-        {
-            $pb->push_list(
-                {
-                    device_iden => $device,
-                    title     => $title,
-                    items     => $items
-                }
-            );
-        }
-    }
-    else
-    {
-        printf
-"pushbullet list --title title --item item1 --item item2 --item item3\n";
     }
 }
 elsif ($opt{action} eq 'note')
@@ -366,7 +306,7 @@ elsif ($opt{action} eq 'sms')
 $pb->print_limits();
 
 =head1 LICENSE
- 
+
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
 
