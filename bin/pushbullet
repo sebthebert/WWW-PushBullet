@@ -263,8 +263,11 @@ elsif ($opt{action} eq 'devices')
     my $devices = $pb->devices();
     foreach my $d (@{$devices})
     {
-        printf "Device '%s' (%s) => id %s\n", 
-            $d->{nickname}, $d->{model}, $d->{iden};
+	if ($d->{active})
+	{
+        	printf "Device '%s' (%s) => id %s\n", 
+            		$d->{nickname}, $d->{model}, $d->{iden};
+	}
     }
 }
 elsif ($opt{action} eq 'file')
