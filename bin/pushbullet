@@ -25,6 +25,8 @@ Program giving easy access to PushBullet features
     pushbullet note [ -k <pushbullet_apikey> ] [ -d <device_iden> ]
         --title 'your title' --body 'your body message'
 
+    pushbullet pushes [ -k <pushbullet_apikey> ]
+
     pushbullet sms [ -k <pushbullet_apikey> ] [ -d <device_iden> ]
         --mobile '+33 6 xx xx xx xx' --sms 'your sms'
 
@@ -96,6 +98,7 @@ use FindBin;
 use Getopt::Long qw(:config no_ignore_case);
 use JSON;
 use Pod::Usage;
+use POSIX 'strftime';
 
 use lib "$FindBin::Bin/../lib/";
 use WWW::PushBullet;
@@ -170,7 +173,7 @@ if ($opt{version})
 
 $opt{action} = $ARGV[0];
 
-my $qr_action_list = qr/^(?:contacts|devices|file|link|note|sms)$/;
+my $qr_action_list = qr/^(?:contacts|devices|file|link|note|pushes|sms)$/;
 pod2usage(0)
     if ((!defined $opt{action}) || ($opt{action} !~ $qr_action_list));
 
@@ -224,11 +227,11 @@ elsif ($opt{action} eq 'devices')
     my $devices = $pb->devices();
     foreach my $d (@{$devices})
     {
-	if ($d->{active})
-	{
-        	printf "Device '%s' (%s) => id %s\n",
-            		$d->{nickname}, $d->{model}, $d->{iden};
-	}
+        if ($d->{active})
+        {
+            printf "Device '%s' (%s) => id %s\n",
+                $d->{nickname}, $d->{model}, $d->{iden};
+        }
     }
 }
 elsif ($opt{action} eq 'file')
@@ -283,6 +286,31 @@ elsif ($opt{action} eq 'note')
     else
     {
         printf "pushbullet note --title title --body 'body message'\n";
+    }
+}
+elsif ($opt{action} eq 'pushes')
+{
+    my $format = "[%s]\n  \033[1m%s\033[m\n  \033[2m%s\033[m\n";
+    my $format_note = "[%s]\n  \033[1m%s\033[m\n  \033[1m%s\033[m\n";
+    my $pushes = $pb->pushes();
+    foreach my $p (reverse @{$pushes})
+    {
+        if (defined $p->{type})
+        {
+            my $datetime = strftime '%Y-%m-%dT%H:%M:%S', localtime $p->{created};
+            if ($p->{type} eq 'file')
+            {
+                printf $format, $datetime, $p->{file_name}, $p->{file_url};
+            }
+            elsif ($p->{type} eq 'link')
+            {
+                printf $format, $datetime, $p->{title}, $p->{url};
+            }
+            elsif ($p->{type} eq 'note')
+            {
+                printf $format_note, $datetime, $p->{title}, $p->{body};
+            }
+        }
     }
 }
 elsif ($opt{action} eq 'sms')

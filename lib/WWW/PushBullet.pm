@@ -16,6 +16,8 @@ Module giving easy access to PushBullet API
 
     my $pb = WWW::PushBullet->new({apikey => $apikey});
 
+    my $pushes = $pb->pushes();
+
     $pb->push_file({ device_iden => $device_iden, file => $filename);
 
     $pb->push_link({ device_iden => $device_iden, title => $title,
@@ -33,6 +35,7 @@ use Data::Dump qw(dump);
 use JSON;
 use LWP::UserAgent;
 use MIME::Types;
+use POSIX 'strftime';
 
 our $VERSION = 'v1.8.0';
 
@@ -146,12 +149,10 @@ sub _update_limits
 sub print_limits
 {
     my $self = shift;
-    use POSIX 'strftime';
-
 
     my $l = $self->{_limits};
-    my $datetime = strftime '%c', localtime $l->{reset};
-    printf "[API Limits: %s / %s (next reset: %s)]\n",
+    my $datetime = strftime '%Y-%m-%dT%H:%M:%S', localtime $l->{reset};
+    printf "\033[2m[API Limits: %s / %s (next reset: %s)]\033[m\n",
         $l->{remaining}, $l->{limit},  $datetime;
 }
 
@@ -321,6 +322,54 @@ sub _upload_request
         print $res->status_line, "\n";
         return (undef);
     }
+}
+
+=head2 pushes()
+
+Returns pushes
+
+    my $pushes = $pb->pushes();
+    foreach my $p (@{$pushes})
+    {
+        printf "[%s] %s: %s\n",
+            $p->{type}, $p->{title}, $p->{body};
+    }
+
+=cut
+
+sub pushes
+{
+    my $self = shift;
+
+    my @pushes = ();
+    my $end = 0;
+    my $url = "$PUSHBULLET{URL_APIV2}/pushes?active=true&limit=500";
+    my $cursor = '';
+    while (! $end)
+    {
+        my $res = $self->{_ua}->get($url . $cursor);
+        if ($res->is_success)
+        {
+            $self->_update_limits($res);
+            my $data = JSON->new->decode($res->content);
+            push @pushes, @{$data->{pushes}};
+            if (!defined $data->{cursor})
+            {
+                $end = 1
+            }
+            else
+            {
+                $cursor = '&cursor=' . $data->{cursor}
+            }
+        }
+        else
+        {
+            print $res->status_line, "\n";
+            return (undef);
+        }
+    }
+
+    return (\@pushes);
 }
 
 =head2 push_file($params)
