@@ -29,6 +29,7 @@ before_install:
   
 install:
   - cpan-install --deps --coverage
+  - dzil authordeps --missing | cpanm
   
 script: 
   - "PERL5OPT=-MDevel::Cover=-coverage,statement,branch,condition,path,subroutine prove -lrsv t"
