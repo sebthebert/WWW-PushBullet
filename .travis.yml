@@ -28,7 +28,7 @@ before_install:
   - cd $BUILD_DIR
   
 install:
-  - cpan-install --coverage
+  - cpan-install --deps --coverage
   
 script: 
   - "PERL5OPT=-MDevel::Cover=-coverage,statement,branch,condition,path,subroutine prove -lrsv t"
