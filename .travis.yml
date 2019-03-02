@@ -1,19 +1,36 @@
 sudo: false
 language: perl
 perl:
+  - "blead"
+  - "5.26"
+  - "5.24"
+  - "5.22"
+  - "5.20"
   - "5.18"
   - "5.16"
   - "5.14"
   - "5.12"
   - "5.10"
+  
+matrix:
+  allow_failures:
+    - perl: blead
+  include:
+    - perl: "5.26"
+      env: COVERAGE=1
+
 before_install:
-  - "dzil authordeps | xargs cpanm"
-  - "cpanm -n Devel::Cover::Report::Coveralls"
-  - "cpanm Dist::Zilla::App::Command::cover"
-install: "dzil listdeps | xargs cpanm"
+  - git clone git://github.com/travis-perl/helpers ~/travis-perl-helpers
+  - source ~/travis-perl-helpers/init --always-upgrade-modules
+  - build-perl
+  - perl -V
+  - build-dist
+  - cd $BUILD_DIR
+
 script: 
   - "PERL5OPT=-MDevel::Cover=-coverage,statement,branch,condition,path,subroutine prove -lrsv t"
   - "cover"
   - "dzil test"
+
 after_success:
-  - "cover -report coveralls"
+  - coverage-report
