@@ -29,6 +29,7 @@ before_install:
   
 install:
   - cpan-install --deps --coverage
+  - cpan-install Devel::Cover
   - dzil authordeps --missing | cpanm
   
 script: 
