@@ -17,7 +17,11 @@ jobs:
       run: > 
         cpanm --sudo -n Dist::Zilla 
         Devel::Cover::Report::Coveralls 
-        Dist::Zilla::App::Command::cover 
+        Dist::Zilla::App::Command::cover
+        Dist::Zilla::Plugin::CheckChangeLog
+        Dist::Zilla::Plugin::ExtraTests
+        Dist::Zilla::Plugin::GitHub::Meta
+        Dist::Zilla::Plugin::MetaProvides::Package
         Dist::Zilla::Plugin::MinimumPerl
         Dist::Zilla::Plugin::RewriteVersion
       
