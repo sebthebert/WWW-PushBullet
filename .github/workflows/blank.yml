@@ -14,10 +14,10 @@ jobs:
       run: sudo apt install -y cpanminus
       
     - name: Install Dist::Zilla stuff
-      run: cpanm --sudo -n Dist::Zilla Devel::Cover::Report::Coveralls Dist::Zilla::App::Command::cover
+      run: cpanm --sudo -n Dist::Zilla Devel::Cover::Report::Coveralls Dist::Zilla::App::Command::cover Dist::Zilla::Plugin::RewriteVersion
       
     - name: Install required modules
-      run: dzil listdeps | xargs cpanm
+      run: dzil listdeps | xargs cpanm --sudo
 
     - name: Tests
       run: |
