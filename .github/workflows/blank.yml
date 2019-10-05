@@ -9,7 +9,18 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
+      
     - name: Install cpanminus
       run: sudo apt install -y cpanminus
+      
     - name: Install Dist::Zilla stuff
-      run: cpanm Dist::Zillacpanm Devel::Cover::Report::Coveralls Dist::Zilla::App::Command::cover
+      run: cpanm -n Dist::Zilla Devel::Cover::Report::Coveralls Dist::Zilla::App::Command::cover
+      
+    - name: Install required modules
+      run: dzil listdeps | xargs cpanm
+
+    - name: Tests
+      run: |
+        PERL5OPT=-MDevel::Cover=-coverage,statement,branch,condition,path,subroutine prove -lrsv t
+        cover
+        dzil test
