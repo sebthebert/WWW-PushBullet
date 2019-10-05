@@ -23,7 +23,12 @@ jobs:
         Dist::Zilla::Plugin::GitHub::Meta
         Dist::Zilla::Plugin::MetaProvides::Package
         Dist::Zilla::Plugin::MinimumPerl
+        Dist::Zilla::Plugin::PerlTidy
+        Dist::Zilla::Plugin::PodCoverageTests
+        Dist::Zilla::Plugin::PodSyntaxTests
         Dist::Zilla::Plugin::RewriteVersion
+        Dist::Zilla::Plugin::Test::Kwalitee::Extra 
+        Dist::Zilla::Plugin::Test::Perl::Critic
       
     - name: Install required modules
       run: dzil listdeps | xargs cpanm --sudo
