@@ -10,6 +10,6 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Install cpanminus
-      run: apt-get install cpanminus
+      run: sudo apt install -y cpanminus
     - name: Install Dist::Zilla stuff
       run: cpanm Dist::Zillacpanm Devel::Cover::Report::Coveralls Dist::Zilla::App::Command::cover
