@@ -13,6 +13,7 @@ use WWW::PushBullet;
 my @pb_functions = qw{
     contacts
     devices
+    print_limits
     push_address
     push_file
     push_link

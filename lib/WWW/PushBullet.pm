@@ -149,6 +149,14 @@ sub _update_limits
 	$self->{_limits} = $limits;			
 }
 
+=head2 print_limits
+
+Prints PushBullet API limits (https://docs.pushbullet.com/#limits)
+
+    $pb->print_limits()
+
+=cut
+
 sub print_limits
 {
 	my $self = shift;
