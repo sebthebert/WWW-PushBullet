@@ -15,7 +15,8 @@ jobs:
       
     - name: Install Dist::Zilla stuff
       run: > 
-        cpanm --sudo -n Dist::Zilla 
+        cpanm --sudo -n Dist::Zilla
+        Devel::Cover::Report::Codecov
         Devel::Cover::Report::Coveralls 
         Dist::Zilla::App::Command::cover
         Dist::Zilla::Plugin::CheckChangeLog
@@ -36,5 +37,7 @@ jobs:
     - name: Tests
       run: |
         PERL5OPT=-MDevel::Cover=-coverage,statement,branch,condition,path,subroutine prove -lrsv t
-        cover
+        cover -report codecov
         dzil test
+      env: 
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
