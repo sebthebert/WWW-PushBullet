@@ -1,4 +1,5 @@
 # WWW-PushBullet [![GitHub version](https://badge.fury.io/gh/sebthebert%2FWWW-PushBullet.svg)](http://badge.fury.io/gh/sebthebert%2FWWW-PushBullet) [![CPAN version](https://badge.fury.io/pl/WWW-PushBullet.svg)](http://badge.fury.io/pl/WWW-PushBullet) [![Build Status](https://secure.travis-ci.org/sebthebert/WWW-PushBullet.png?branch=master)](http://travis-ci.org/sebthebert/WWW-PushBullet) [![Coverage Status](https://coveralls.io/repos/sebthebert/WWW-PushBullet/badge.png)](https://coveralls.io/r/sebthebert/WWW-PushBullet)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fsebthebert%2FWWW-PushBullet.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fsebthebert%2FWWW-PushBullet?ref=badge_shield)
 
 # About
 
@@ -142,3 +143,7 @@ Then you can build and test with DistZilla:
      dzil release
      
 which will create a release in the subfolder `WWW-PushBullet-<version>`, that you can then make and install following the standard instructions above.
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fsebthebert%2FWWW-PushBullet.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fsebthebert%2FWWW-PushBullet?ref=badge_large)
